@@ -1,0 +1,74 @@
+[gd_scene load_steps=7 format=3 uid="uid://dn0h10osvj8l4"]
+
+[ext_resource type="Texture2D" uid="uid://dqqx1qr1c4dft" path="res://Textures/Player/player_sprite.png" id="1_fkhr3"]
+[ext_resource type="Script" path="res://Player/player.gd" id="1_fp2q8"]
+[ext_resource type="PackedScene" uid="uid://c6lj84u0fegmg" path="res://Utility/hurt_box.tscn" id="3_e1xs0"]
+
+[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_xodcw"]
+radius = 5.0
+height = 18.0
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_63bka"]
+size = Vector2(12, 19)
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_dyt1r"]
+radius = 371.486
+
+[node name="Player" type="CharacterBody2D" groups=["player"]]
+collision_layer = 2
+collision_mask = 13
+motion_mode = 1
+script = ExtResource("1_fp2q8")
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+texture = ExtResource("1_fkhr3")
+hframes = 2
+
+[node name="Camera2D" type="Camera2D" parent="."]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+position = Vector2(2, 1)
+shape = SubResource("CapsuleShape2D_xodcw")
+
+[node name="WalkTimer" type="Timer" parent="."]
+unique_name_in_owner = true
+wait_time = 0.2
+one_shot = true
+
+[node name="HurtBox" parent="." instance=ExtResource("3_e1xs0")]
+collision_mask = 2
+
+[node name="CollisionShape2D" parent="HurtBox" index="0"]
+position = Vector2(2, 1.5)
+shape = SubResource("RectangleShape2D_63bka")
+
+[node name="Attack" type="Node2D" parent="."]
+
+[node name="IceSpearTimer" type="Timer" parent="Attack"]
+unique_name_in_owner = true
+editor_description = "Controls the time it takes for ammo to reload."
+wait_time = 1.5
+
+[node name="IceSpearAttackTimer" type="Timer" parent="Attack/IceSpearTimer"]
+unique_name_in_owner = true
+editor_description = "Controls the cooldown for firing an Ice Spear."
+wait_time = 0.075
+
+[node name="EnemyDetectionArea" type="Area2D" parent="Attack"]
+visible = false
+collision_layer = 0
+collision_mask = 4
+monitorable = false
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Attack/EnemyDetectionArea"]
+shape = SubResource("CircleShape2D_dyt1r")
+
+[connection signal="hurt" from="HurtBox" to="." method="_on_hurt_box_hurt"]
+[connection signal="timeout" from="Attack/IceSpearTimer" to="." method="_on_ice_spear_timer_timeout"]
+[connection signal="timeout" from="Attack/IceSpearTimer/IceSpearAttackTimer" to="." method="_on_ice_spear_attack_timer_timeout"]
+[connection signal="area_entered" from="Attack/EnemyDetectionArea" to="." method="_on_enemy_detection_area_area_entered"]
+[connection signal="area_exited" from="Attack/EnemyDetectionArea" to="." method="_on_enemy_detection_area_area_exited"]
+[connection signal="body_entered" from="Attack/EnemyDetectionArea" to="." method="_on_enemy_detection_area_body_entered"]
+[connection signal="body_exited" from="Attack/EnemyDetectionArea" to="." method="_on_enemy_detection_area_body_exited"]
+
+[editable path="HurtBox"]
