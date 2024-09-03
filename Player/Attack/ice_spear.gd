@@ -3,10 +3,10 @@ extends Area2D
 
 # global stats
 var level: int = 1
-var hp: int = 1
+var hp: int = 2 # penetration through enemies
 var speed: int = 100
 var damage: int = 5
-var knock_amount: int = 100
+var knockback_amount: int = 100
 var attack_size: float = 1.0
 
 # intialize firing vars
@@ -14,6 +14,8 @@ var target: Vector2 = Vector2(0.0, 0.0)
 var angle: Vector2 = Vector2(0.0, 0.0)
 
 @onready var player = get_tree().get_first_node_in_group("player")
+
+signal remove_from_list(object: Object)
 
 func _ready() -> void:
 	# get angle to target
@@ -23,10 +25,10 @@ func _ready() -> void:
 	# set level stats
 	match level:
 		1:
-			hp= 1
+			hp= 2
 			speed= 100
 			damage= 5
-			knock_amount= 100
+			knockback_amount= 100
 			attack_size = 1.0
 	# set a enlarging amount on spawn
 	var tween: Tween = create_tween()
@@ -43,8 +45,12 @@ func enemy_hit(charge: int = 1):
 	hp -= charge
 	# despawn if necessary
 	if hp <= 0:
+		# remove from hurtbox list
+		emit_signal("remove_from_list", self)
 		queue_free()
 
 ## Delete projectile after some time is passed (and is offscreen)
 func _on_timer_timeout() -> void:
+	# remove from hurtbox list
+	emit_signal("remove_from_list", self)
 	queue_free()

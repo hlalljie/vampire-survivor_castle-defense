@@ -1,15 +1,24 @@
 extends CharacterBody2D
 
-# global variables
+# enemy stats
 @export var movement_speed: float = 20
 @export var hp: int = 10
+@export var knockback_recovery: float = 3.5
+
+# current knockback
+var knockback: Vector2 = Vector2(0.0, 0.0)
 
 # imported local variables (from node)
 @onready var sprite: Sprite2D = $Sprite2D
 @onready var anim: AnimationPlayer = $AnimationPlayer
+@onready var sound_hit: AudioStreamPlayer2D = $sound_hit
 
 # imported external variables (from other nodes)
 @onready var player: Node = get_tree().get_first_node_in_group("player")
+
+var death_anim: Resource = preload("res://Enemy/explosion.tscn")
+
+signal remove_from_list(object: Object)
 
 # runs once at the beginning
 func _ready() -> void:
@@ -18,6 +27,8 @@ func _ready() -> void:
 
 
 func _physics_process(delta: float) -> void:
+	# apply knockback recovery to knockback
+	knockback = knockback.move_toward(Vector2.ZERO, knockback_recovery)
 	# Get the direction(unit vector) of the the enemy position towards the player position
 	var direction: Vector2 = global_position.direction_to(player.global_position)
 	# face enemy sprite in correct direction
@@ -28,16 +39,32 @@ func _physics_process(delta: float) -> void:
 
 	# set velocity
 	velocity = direction * movement_speed
-	# move and set to slide on colllision
+	# apply knockback
+	velocity += knockback
+	# move and set to slide on collision
 	move_and_slide()
+	
+func death():
+	print("Enemy killed")
+	emit_signal("remove_from_list", self)
+	# trigger death explosion
+	var enemy_death: Sprite2D = death_anim.instantiate()
+	enemy_death.scale = sprite.scale
+	enemy_death.global_position = global_position
+	get_parent().call_deferred("add_child", enemy_death)
+	# deletes the enemy from the scene
+	queue_free()
 
 
-func _on_hurt_box_hurt(damage: int) -> void:
+func _on_hurt_box_hurt(damage: int, angle: Vector2, knockback_amount: int) -> void:
 	# lowers hp based on damage recieved
 	hp -= damage
 	print("Enemy hit %d for damage. Enemy HP now: %d" %[damage, hp])
-	# if enemy is killed delete them from the scene
+	# calculate the knockback vector based on angle and amount
+	knockback = angle * knockback_amount
+	# hit that kills
 	if hp <= 0:
-		print("Enemy killed")
-		# deletes the enemy from the scene
-		queue_free()
+		death()
+	# hit that doesn't kill
+	else:
+		sound_hit.play()

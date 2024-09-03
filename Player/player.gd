@@ -65,7 +65,7 @@ func attack() -> void:
 			iceSpearTimer.start()
 
 ## Lowers hp based on damage recieved
-func _on_hurt_box_hurt(damage: int) -> void:
+func _on_hurt_box_hurt(damage: int, _angle, _knockback) -> void:
 	# lowers hp based on damage recieved
 	hp -= damage
 	print("Player hit %d for damage. Player HP now: %d" %[damage, hp])
