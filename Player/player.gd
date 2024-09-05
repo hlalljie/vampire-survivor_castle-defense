@@ -10,16 +10,27 @@ var hp: int = 80
 
 # Attacks
 var iceSpear: Resource = preload("res://Player/Attack/ice_spear.tscn")
+var tornado: Resource = preload("res://Player/Attack/tornado.tscn")
 
 # Attack Nodes
 @onready var iceSpearTimer: Timer = get_node("%IceSpearTimer")
 @onready var iceSpearAttackTimer: Timer = get_node("%IceSpearAttackTimer")
+@onready var tornadoTimer: Timer = get_node("%TornadoTimer")
+@onready var tornadoAttackTimer: Timer = get_node("%TornadoAttackTimer")
 
 # Ice Spear
 var ice_spear_ammo: int = 0
 var ice_spear_base_ammo: int = 1
 var ice_spear_attack_speed: float = 1.5
-var ice_spear_level: int = 1
+var ice_spear_level: int = 0
+
+# Tornado
+var tornado_ammo: int = 0
+var tornado_base_ammo: int = 1
+var tornado_attack_speed: float = 3.0
+var tornado_level: int = 1
+
+var last_movement: Vector2 = Vector2.UP
 
 var close_enemies: Array = []
 
@@ -48,6 +59,9 @@ func movement() -> void:
 			sprite.frame = (sprite.frame + 1) % (sprite.hframes)
 			# restart walk timer
 			walkTimer.start()
+		
+		# update last movement, rounding brings diagonal unit vector to 1, 1 (instead of .7, .7)
+		last_movement = move.round()
 	
 	# set velocity as the unit vector of move multiplied by the movement speed
 	velocity = move.normalized() * movement_speed
@@ -63,6 +77,12 @@ func attack() -> void:
 		# start the timer
 		if iceSpearTimer.is_stopped():
 			iceSpearTimer.start()
+	if tornado_level > 0:
+		# set up the timer with the wait time
+		tornadoTimer.wait_time = tornado_attack_speed
+		# start the timer
+		if tornadoTimer.is_stopped():
+			tornadoTimer.start()
 
 ## Lowers hp based on damage recieved
 func _on_hurt_box_hurt(damage: int, _angle, _knockback) -> void:
@@ -96,6 +116,33 @@ func _on_ice_spear_attack_timer_timeout() -> void:
 			iceSpearAttackTimer.start()
 		else: 
 			iceSpearAttackTimer.stop()
+			
+## Gain ammo every time the timer is up
+func _on_tornado_timer_timeout() -> void:
+	tornado_ammo += tornado_base_ammo
+	tornadoAttackTimer.start()
+
+## Fire a shot if there is ammo and if the timer is up
+func _on_tornado_attack_timer_timeout() -> void:
+	# check if there is ammo
+	if tornado_ammo > 0:
+		# create an ice spear
+		var tornado_attack: Area2D = tornado.instantiate()
+		# set it's position to the player's position
+		tornado_attack.position = position
+		# finds a random target direction
+		tornado_attack.last_movement = last_movement
+		# set the level to the current level
+		tornado_attack.level = tornado_level
+		# add ice spear to the scene
+		add_child(tornado_attack)
+		# use the ammo
+		tornado_ammo -= 1
+		# fire off more ice spears if ammo exists
+		if tornado_ammo > 0:
+			tornadoAttackTimer.start()
+		else: 
+			tornadoAttackTimer.stop()
 
 # Finds a random target direction from the list of close enemies
 func get_random_target() -> Vector2:
