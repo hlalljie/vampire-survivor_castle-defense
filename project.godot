@@ -28,6 +28,7 @@ window/dpi/allow_hidpi=false
 
 player=""
 attack=""
+loot=""
 
 [input]
 

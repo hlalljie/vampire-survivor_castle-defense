@@ -3,6 +3,13 @@ extends CharacterBody2D
 # Global variables
 var movement_speed: float = 60.0
 var hp: int = 80
+var last_movement: Vector2 = Vector2.UP
+
+# Experience
+var exp: int = 0
+var exp_level: int = 1
+var collected_exp = 0
+
 
 # imports from local nodes
 @onready var sprite: Sprite2D = $Sprite2D
@@ -36,12 +43,15 @@ var tornado_level: int = 1
 var javelin_ammo: int = 3
 var javelin_level: int = 1
 
-var last_movement: Vector2 = Vector2.UP
-
 var close_enemies: Array = []
+
+# GUI
+@onready var expBar: TextureProgressBar = get_node("%ExperienceBar")
+@onready var levelLabel: Label = get_node("%Level_Label")
 
 func _ready() -> void:
 	attack()
+	set_exp_bar(exp, calculate_exp_cap())
 
 func _physics_process(delta: float) -> void:
 	movement()
@@ -96,7 +106,7 @@ func attack() -> void:
 func _on_hurt_box_hurt(damage: int, _angle, _knockback) -> void:
 	# lowers hp based on damage recieved
 	hp -= damage
-	print("Player hit %d for damage. Player HP now: %d" %[damage, hp])
+	#print("Player hit %d for damage. Player HP now: %d" %[damage, hp])
 
 ## Gain ammo every time the timer is up
 func _on_ice_spear_timer_timeout() -> void:
@@ -183,3 +193,51 @@ func _on_enemy_detection_area_body_exited(body: Node2D) -> void:
 	# if the enemy is still in close enemies, delete it
 	if close_enemies.has(body):
 		close_enemies.erase(body)
+
+func _on_grab_area_area_entered(area: Area2D) -> void:
+	if area.is_in_group("loot"):
+		area.target = self
+
+
+func _on_collect_area_area_entered(area: Area2D) -> void:
+	if area.is_in_group("loot"):
+		var gem_exp = area.collect()
+		calculate_exp(gem_exp)
+		
+
+func calculate_exp(gem_exp: int):
+	var exp_req = calculate_exp_cap()
+	collected_exp += gem_exp
+	 # level up
+	if exp + collected_exp >= exp_req:
+		collected_exp -= exp_req - exp
+		levelLabel.text = "Level: " + str(exp_level)
+		exp_level += 1
+		exp = 0
+		# calculate gain with any leftover experience after leveling
+		exp_req = calculate_exp_cap()
+		calculate_exp(0)
+	# add collected experience to our total
+	else:
+		exp += collected_exp
+		collected_exp = 0
+	set_exp_bar(exp, exp_req)
+		
+## Calculate current level's total experience needed
+func calculate_exp_cap():
+	# bracketed exp caps that carry over previous bracket values
+	var exp_cap = exp_level
+	if exp_level < 20:
+		exp_cap = exp_level * 5
+	elif exp_level < 40:
+		exp_cap = 95 + (exp_level - 19) * 8
+	else:
+		exp_cap = 255 + (exp_level - 39) * 12
+	return exp_cap
+	
+func set_exp_bar(set_value = 1, set_max_value = 100):
+	expBar.value = set_value
+	expBar.max_value = set_max_value
+	
+	
+		
