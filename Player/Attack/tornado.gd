@@ -59,9 +59,8 @@ func _ready():
 	
 	# tween between the two determined angles to give a wave (back and forth) effect
 	var tween: Tween = create_tween()
-	# randomize the start
+	# randomize the start arc
 	var set_angle: int = randi_range(0, 1)
-	
 	if set_angle == 1:
 		angle = angle_less
 		tween.tween_property(self, "angle", angle_more, 2)

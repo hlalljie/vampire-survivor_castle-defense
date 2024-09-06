@@ -11,24 +11,30 @@ var hp: int = 80
 # Attacks
 var iceSpear: Resource = preload("res://Player/Attack/ice_spear.tscn")
 var tornado: Resource = preload("res://Player/Attack/tornado.tscn")
+var javelin: Resource = preload("res://Player/Attack/javelin.tscn")
 
 # Attack Nodes
 @onready var iceSpearTimer: Timer = get_node("%IceSpearTimer")
 @onready var iceSpearAttackTimer: Timer = get_node("%IceSpearAttackTimer")
 @onready var tornadoTimer: Timer = get_node("%TornadoTimer")
 @onready var tornadoAttackTimer: Timer = get_node("%TornadoAttackTimer")
+@onready var javelinBase: Node2D = get_node("%JavelinBase")
 
 # Ice Spear
 var ice_spear_ammo: int = 0
-var ice_spear_base_ammo: int = 1
+var ice_spear_base_ammo: int = 3
 var ice_spear_attack_speed: float = 1.5
-var ice_spear_level: int = 0
+var ice_spear_level: int = 1
 
 # Tornado
 var tornado_ammo: int = 0
-var tornado_base_ammo: int = 1
+var tornado_base_ammo: int = 3
 var tornado_attack_speed: float = 3.0
 var tornado_level: int = 1
+
+# Javelin
+var javelin_ammo: int = 3
+var javelin_level: int = 1
 
 var last_movement: Vector2 = Vector2.UP
 
@@ -83,6 +89,8 @@ func attack() -> void:
 		# start the timer
 		if tornadoTimer.is_stopped():
 			tornadoTimer.start()
+	if javelin_level > 0:
+		spawn_javelin()
 
 ## Lowers hp based on damage recieved
 func _on_hurt_box_hurt(damage: int, _angle, _knockback) -> void:
@@ -143,7 +151,18 @@ func _on_tornado_attack_timer_timeout() -> void:
 			tornadoAttackTimer.start()
 		else: 
 			tornadoAttackTimer.stop()
-
+## Spawns as many javelins as there is ammo
+func spawn_javelin():
+	# create as many javelins as are needed (how much javelin ammo)
+	var current_javelin_total: int = javelinBase.get_child_count()
+	var calc_spawns: int = javelin_ammo - current_javelin_total
+	# continue to spawn javelins as needed
+	while calc_spawns > 0:
+		var javelin_spawn: Area2D = javelin.instantiate()
+		javelin_spawn.global_position = global_position
+		javelinBase.add_child(javelin_spawn)
+		calc_spawns -= 1
+	
 # Finds a random target direction from the list of close enemies
 func get_random_target() -> Vector2:
 	# check if there are any close enemies
