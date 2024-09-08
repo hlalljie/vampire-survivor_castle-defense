@@ -2,6 +2,7 @@ extends CharacterBody2D
 
 # Global variables
 var movement_speed: float = 60.0
+var maxhp: int = 80
 var hp: int = 80
 var last_movement: Vector2 = Vector2.UP
 
@@ -29,27 +30,43 @@ var javelin: Resource = preload("res://Player/Attack/javelin.tscn")
 
 # Ice Spear
 var ice_spear_ammo: int = 0
-var ice_spear_base_ammo: int = 3
+var ice_spear_base_ammo: int = 1
 var ice_spear_attack_speed: float = 1.5
-var ice_spear_level: int = 1
+var ice_spear_level: int = 0
 
 # Tornado
 var tornado_ammo: int = 0
-var tornado_base_ammo: int = 3
+var tornado_base_ammo: int = 1
 var tornado_attack_speed: float = 3.0
-var tornado_level: int = 1
+var tornado_level: int = 0
 
 # Javelin
-var javelin_ammo: int = 3
-var javelin_level: int = 1
+var javelin_ammo: int = 1
+var javelin_level: int = 0
 
 var close_enemies: Array = []
 
 # GUI
 @onready var expBar: TextureProgressBar = get_node("%ExperienceBar")
-@onready var levelLabel: Label = get_node("%Level_Label")
+@onready var levelLabel: Label = get_node("%LevelLabel")
+# Level up GUI
+@onready var levelPanel: Panel = get_node("%LevelUpPanel")
+@onready var levelUpLabel: Label = get_node("%LevelUpLabel")
+@onready var upgradeOptions: VBoxContainer = get_node("%UpgradeOptions")
+@onready var soundLevelUp: AudioStreamPlayer = get_node("%sound_level_up")
+@onready var itemOptions: Resource = preload("res://Utility/item_option.tscn")
+
+# Upgrades
+var collected_upgrades: Array = []
+var upgrade_options: Array = []
+var armor: float = 0
+var speed: int = 0
+var spell_cooldown: float = 0
+var spell_size: float = 0
+var additional_attacks = 0
 
 func _ready() -> void:
+	upgrade_character("tornado1")
 	attack()
 	set_exp_bar(exp, calculate_exp_cap())
 
@@ -89,13 +106,13 @@ func attack() -> void:
 	# if there is an ice spear activate
 	if ice_spear_level > 0:
 		# set up the timer with the wait time
-		iceSpearTimer.wait_time = ice_spear_attack_speed
+		iceSpearTimer.wait_time = ice_spear_attack_speed * (1 - spell_cooldown)
 		# start the timer
 		if iceSpearTimer.is_stopped():
 			iceSpearTimer.start()
 	if tornado_level > 0:
 		# set up the timer with the wait time
-		tornadoTimer.wait_time = tornado_attack_speed
+		tornadoTimer.wait_time = tornado_attack_speed * (1 - spell_cooldown)
 		# start the timer
 		if tornadoTimer.is_stopped():
 			tornadoTimer.start()
@@ -105,12 +122,13 @@ func attack() -> void:
 ## Lowers hp based on damage recieved
 func _on_hurt_box_hurt(damage: int, _angle, _knockback) -> void:
 	# lowers hp based on damage recieved
-	hp -= damage
+	hp -= clamp(damage-armor, 1.0, 99999.0)
+	print("hp:", hp)
 	#print("Player hit %d for damage. Player HP now: %d" %[damage, hp])
 
 ## Gain ammo every time the timer is up
 func _on_ice_spear_timer_timeout() -> void:
-	ice_spear_ammo += ice_spear_base_ammo
+	ice_spear_ammo += ice_spear_base_ammo + additional_attacks
 	iceSpearAttackTimer.start()
 
 ## Fire a shot if there is ammo and if the timer is up
@@ -137,7 +155,7 @@ func _on_ice_spear_attack_timer_timeout() -> void:
 			
 ## Gain ammo every time the timer is up
 func _on_tornado_timer_timeout() -> void:
-	tornado_ammo += tornado_base_ammo
+	tornado_ammo += tornado_base_ammo + additional_attacks
 	tornadoAttackTimer.start()
 
 ## Fire a shot if there is ammo and if the timer is up
@@ -165,13 +183,19 @@ func _on_tornado_attack_timer_timeout() -> void:
 func spawn_javelin():
 	# create as many javelins as are needed (how much javelin ammo)
 	var current_javelin_total: int = javelinBase.get_child_count()
-	var calc_spawns: int = javelin_ammo - current_javelin_total
+	var calc_spawns: int = (javelin_ammo + additional_attacks) - current_javelin_total
 	# continue to spawn javelins as needed
 	while calc_spawns > 0:
 		var javelin_spawn: Area2D = javelin.instantiate()
 		javelin_spawn.global_position = global_position
 		javelinBase.add_child(javelin_spawn)
 		calc_spawns -= 1
+	# update current javelins
+	var current_javelins = javelinBase.get_children()
+	for javelin in current_javelins:
+		if javelin.has_method("update_javelin"):
+			javelin.update_javelin()
+		
 	
 # Finds a random target direction from the list of close enemies
 func get_random_target() -> Vector2:
@@ -211,12 +235,13 @@ func calculate_exp(gem_exp: int):
 	 # level up
 	if exp + collected_exp >= exp_req:
 		collected_exp -= exp_req - exp
-		levelLabel.text = "Level: " + str(exp_level)
-		exp_level += 1
 		exp = 0
 		# calculate gain with any leftover experience after leveling
 		exp_req = calculate_exp_cap()
-		calculate_exp(0)
+		# update player level
+		exp_level += 1
+		levelUp()
+		#calculate_exp(0)
 	# add collected experience to our total
 	else:
 		exp += collected_exp
@@ -239,5 +264,123 @@ func set_exp_bar(set_value = 1, set_max_value = 100):
 	expBar.value = set_value
 	expBar.max_value = set_max_value
 	
+func levelUp() -> void:
+	# play level up sound
+	soundLevelUp.play()
+	# update level label
+	levelLabel.text = "Level: " + str(exp_level)
+	# move level panel into position and show
+	var tween = levelPanel.create_tween()
+	tween.tween_property(levelPanel, "position", Vector2(220, 50), .2).set_trans(Tween.TRANS_QUINT).set_ease(Tween.EASE_IN)
+	tween.play()
+	levelPanel.visible = true
+	# upgrade options population
+	var options: int = 0
+	var options_max: int = 3
+	for i in range(options_max):
+		# create a single option
+		var option_choice: ColorRect = itemOptions.instantiate()
+		# get a random option 
+		option_choice.item = get_random_item()
+		upgradeOptions.add_child(option_choice)
+	# pause the game until upgrde is selected
+	get_tree().paused = true
+
+## Upgrades the character with the selected upgrade
+func upgrade_character(upgrade):
+	match upgrade:
+		"ice_spear1":
+			ice_spear_level = 1
+			ice_spear_base_ammo += 1
+		"ice_spear2":
+			ice_spear_level = 2
+			ice_spear_base_ammo += 1
+		"ice_spear3":
+			ice_spear_level = 3
+		"ice_spear4":
+			ice_spear_level = 4
+			ice_spear_base_ammo += 2
+		"tornado1":
+			tornado_level = 1
+			tornado_base_ammo += 1
+		"tornado2":
+			tornado_level = 2
+			tornado_base_ammo += 1
+		"tornado3":
+			tornado_level = 3
+			tornado_attack_speed -= 0.5
+		"tornado4":
+			tornado_level = 4
+			tornado_base_ammo += 1
+		"javelin1":
+			javelin_level = 1
+			javelin_ammo = 1
+		"javelin2":
+			javelin_level = 2
+		"javelin3":
+			javelin_level = 3
+		"javelin4":
+			javelin_level = 4
+		"armor1","armor2","armor3","armor4":
+			armor += 1
+		"speed1","speed2","speed3","speed4":
+			movement_speed += 20.0
+		"tome1","tome2","tome3","tome4":
+			spell_size += 0.10
+		"scroll1","scroll2","scroll3","scroll4":
+			spell_cooldown += 0.05
+		"ring1","ring2":
+			additional_attacks += 1
+		"food":
+			hp += 20
+			hp = clamp(hp,0,maxhp)
+	#call attack script to refresh everything
+	attack()
+	# delete all the options
+	var option_children: Array = upgradeOptions.get_children()
+	for child in option_children:
+		child.queue_free()
+	# empty the options list
+	upgrade_options.clear()
+	# collect the upgrade
+	collected_upgrades.append(upgrade)
+	# hide the level up panel
+	levelPanel.visible = false
+	levelPanel.position = Vector2(800, 50)
+	# unpause the game
+	get_tree().paused = false
+	# recalculate how much exp is left
+	calculate_exp(0)
 	
+## Gets a random option one at a time
+# TODO: optimize this to get all random items needed
+func get_random_item() -> String:
+	var db_list: Array = []
+	for upgrade in UpgradeDb.UPGRADES:
+		# if already collected, no need to check
+		if upgrade in collected_upgrades:
+			continue
+		# if already in the options, no need to check
+		if upgrade in upgrade_options:
+			continue
+		# don't pick food
+		if UpgradeDb.UPGRADES[upgrade]["type"] == "item": 
+			continue
+		# if there are no prereqs it can be added to potential options
+		if UpgradeDb.UPGRADES[upgrade]["prerequisites"].is_empty():
+			db_list.append(upgrade)
+		# if there are prereqs, add to list if prereqs are filled
+		else:
+			var prereq_filled: bool = true
+			for prereq in UpgradeDb.UPGRADES[upgrade]["prerequisites"]:
+				if prereq not in collected_upgrades:
+					prereq_filled = false
+					break
+			if prereq_filled:
+				db_list.append(upgrade) 
 		
+	if not db_list.is_empty():
+		var random_item: String = db_list.pick_random()
+		upgrade_options.append(random_item)
+		return random_item
+	return ""

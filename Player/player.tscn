@@ -1,4 +1,4 @@
-[gd_scene load_steps=12 format=3 uid="uid://dn0h10osvj8l4"]
+[gd_scene load_steps=13 format=3 uid="uid://dn0h10osvj8l4"]
 
 [ext_resource type="Texture2D" uid="uid://dqqx1qr1c4dft" path="res://Textures/Player/player_sprite.png" id="1_fkhr3"]
 [ext_resource type="Script" path="res://Player/player.gd" id="1_fp2q8"]
@@ -6,6 +6,7 @@
 [ext_resource type="Texture2D" uid="uid://7dmvisc7u0kr" path="res://Textures/GUI/exp_background.png" id="4_2wpt1"]
 [ext_resource type="Texture2D" uid="uid://dyroyu71t53ff" path="res://Textures/GUI/exp_progress.png" id="5_dh274"]
 [ext_resource type="FontFile" uid="uid://y4r3gmoegtqd" path="res://Font/tenderness.otf" id="6_lctsa"]
+[ext_resource type="AudioStream" uid="uid://dos0ut37e7o2b" path="res://Audio/SoundEffect/levelup.ogg" id="7_bxx58"]
 
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_xodcw"]
 radius = 5.0
@@ -113,7 +114,7 @@ offset_bottom = 40.0
 texture_under = ExtResource("4_2wpt1")
 texture_progress = ExtResource("5_dh274")
 
-[node name="Level_Label" type="Label" parent="GUILayer/GUI/ExperienceBar"]
+[node name="LevelLabel" type="Label" parent="GUILayer/GUI/ExperienceBar"]
 unique_name_in_owner = true
 layout_mode = 0
 offset_left = 540.0
@@ -124,6 +125,39 @@ theme_override_font_sizes/font_size = 16
 text = "Level 1:"
 horizontal_alignment = 1
 vertical_alignment = 2
+
+[node name="LevelUpPanel" type="Panel" parent="GUILayer/GUI"]
+unique_name_in_owner = true
+process_mode = 2
+visible = false
+layout_mode = 0
+offset_left = 800.0
+offset_top = 50.0
+offset_right = 1000.0
+offset_bottom = 300.0
+
+[node name="LevelUpLabel" type="Label" parent="GUILayer/GUI/LevelUpPanel"]
+unique_name_in_owner = true
+layout_mode = 0
+offset_right = 200.0
+offset_bottom = 50.0
+theme_override_fonts/font = ExtResource("6_lctsa")
+text = "Level Up!"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="UpgradeOptions" type="VBoxContainer" parent="GUILayer/GUI/LevelUpPanel"]
+unique_name_in_owner = true
+layout_mode = 0
+offset_left = 10.0
+offset_top = 50.0
+offset_right = 190.0
+offset_bottom = 100.0
+
+[node name="sound_level_up" type="AudioStreamPlayer" parent="GUILayer/GUI/LevelUpPanel"]
+unique_name_in_owner = true
+stream = ExtResource("7_bxx58")
+volume_db = -10.0
 
 [connection signal="hurt" from="HurtBox" to="." method="_on_hurt_box_hurt"]
 [connection signal="timeout" from="Attack/IceSpearTimer" to="." method="_on_ice_spear_timer_timeout"]

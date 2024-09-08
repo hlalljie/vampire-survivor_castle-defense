@@ -21,11 +21,33 @@ signal remove_from_list(object: Object)
 func _ready():
 	match level:
 		1:
-			hp = 999
+			hp = 9999
 			speed = 100.0
 			damage = 5
-			attack_size = 1.0
+			attack_size = 1.0 * (1 + player.spell_size)
 			knockback_amount = 100
+		# additional tornado (so no changes here
+		2:
+			hp = 9999
+			speed = 100.0
+			damage = 5
+			attack_size = 1.0 * (1 + player.spell_size)
+			knockback_amount = 100
+		# reduces cooldown (so no changes here
+		3:
+			hp = 9999
+			speed = 100.0
+			damage = 5
+			attack_size = 1.0 * (1 + player.spell_size)
+			knockback_amount = 100
+		# increase knockback
+		4:
+			hp = 9999
+			speed = 100.0
+			damage = 5
+			attack_size = 1.0 * (1 + player.spell_size)
+			knockback_amount = 125
+		 
 	# bounce between two points in space to give a similar to sine wave patters (sharper than sine)
 	var move_to_less = Vector2.ZERO
 	var move_to_more = Vector2.ZERO
