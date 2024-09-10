@@ -6,6 +6,11 @@ extends Node2D
 # keeps track of the current time
 var time: int = 0
 
+signal change_time(time: int)
+
+func _ready() -> void:
+	connect("change_time", Callable(player, "change_time"))
+
 ## Counts time and spawns enemies based on time
 func _on_timer_timeout() -> void:
 	# counts time
@@ -34,6 +39,7 @@ func _on_timer_timeout() -> void:
 					enemy_spawn.global_position = get_random_position()
 					# add the enemy to the scene (via the spawner)
 					add_child(enemy_spawn)
+	emit_signal("change_time", time)
 					
 ## Gets a random position outside of the viewport (in a range)
 ## @return Vector2 A random position outside of the viewport

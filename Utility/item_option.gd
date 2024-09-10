@@ -16,6 +16,7 @@ func _ready() -> void:
 		item = "food"
 	# connected our selected upgrade signal to the player's upgrade character function
 	connect("selected_upgrade", Callable(player, "upgrade_character"))
+	# set the option labels that are displayed based on the item
 	NameLabel.text = UpgradeDb.UPGRADES[item]["display_name"]
 	DescriptionLabel.text = UpgradeDb.UPGRADES[item]["description"]
 	LevelLabel.text = UpgradeDb.UPGRADES[item]["level"]

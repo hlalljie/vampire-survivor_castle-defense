@@ -2,9 +2,10 @@ extends CharacterBody2D
 
 # Global variables
 var movement_speed: float = 60.0
-var maxhp: int = 80
+var max_hp: int = 80
 var hp: int = 80
 var last_movement: Vector2 = Vector2.UP
+var time: int = 0 
 
 # Experience
 var exp: int = 0
@@ -46,7 +47,7 @@ var javelin_level: int = 0
 
 var close_enemies: Array = []
 
-# GUI
+## GUI
 @onready var expBar: TextureProgressBar = get_node("%ExperienceBar")
 @onready var levelLabel: Label = get_node("%LevelLabel")
 # Level up GUI
@@ -55,6 +56,14 @@ var close_enemies: Array = []
 @onready var upgradeOptions: VBoxContainer = get_node("%UpgradeOptions")
 @onready var soundLevelUp: AudioStreamPlayer = get_node("%sound_level_up")
 @onready var itemOptions: Resource = preload("res://Utility/item_option.tscn")
+# Health Bar GUI
+@onready var healthBar: TextureProgressBar = get_node("%HealthBar")
+# Timer GUI
+@onready var timerLabel: Label = get_node("%TimerLabel")
+# Collected Items/Upgrades UI
+@onready var collectedWeapons: GridContainer = get_node("%CollectedWeapons")
+@onready var collectedUpgrades: GridContainer = get_node("%CollectedUpgrades")
+@onready var itemContainer: Resource = preload("res://GUI/item_container.tscn")
 
 # Upgrades
 var collected_upgrades: Array = []
@@ -66,9 +75,12 @@ var spell_size: float = 0
 var additional_attacks = 0
 
 func _ready() -> void:
-	upgrade_character("tornado1")
+	select_first_weapon()
+	# proc all attacks
 	attack()
 	set_exp_bar(exp, calculate_exp_cap())
+	# setup health bar
+	_on_hurt_box_hurt(0, 0, 0)
 
 func _physics_process(delta: float) -> void:
 	movement()
@@ -124,7 +136,8 @@ func _on_hurt_box_hurt(damage: int, _angle, _knockback) -> void:
 	# lowers hp based on damage recieved
 	hp -= clamp(damage-armor, 1.0, 99999.0)
 	print("hp:", hp)
-	#print("Player hit %d for damage. Player HP now: %d" %[damage, hp])
+	healthBar.max_value = max_hp
+	healthBar.value = hp	
 
 ## Gain ammo every time the timer is up
 func _on_ice_spear_timer_timeout() -> void:
@@ -285,6 +298,28 @@ func levelUp() -> void:
 		upgradeOptions.add_child(option_choice)
 	# pause the game until upgrde is selected
 	get_tree().paused = true
+	
+	
+## Allows the player to select a weapon at the beginning
+func select_first_weapon() -> void:
+	# change level up label to say Select First Weapon
+	levelUpLabel.text = "Select First Weapon"
+	# move level panel into position and show
+	var tween: Tween = levelPanel.create_tween()
+	tween.tween_property(levelPanel, "position", Vector2(220, 50), .2).set_trans(Tween.TRANS_QUINT).set_ease(Tween.EASE_IN)
+	tween.play()
+	levelPanel.visible = true
+	# upgrade options population
+	var options: int = 0
+	var options_max: int = 3
+	for i in range(options_max):
+		# create a single option
+		var option_choice: ColorRect = itemOptions.instantiate()
+		# get a random option 
+		option_choice.item = get_random_item(["weapon"])
+		upgradeOptions.add_child(option_choice)
+	# pause the game until upgrade is selected
+	get_tree().paused = true
 
 ## Upgrades the character with the selected upgrade
 func upgrade_character(upgrade):
@@ -333,7 +368,9 @@ func upgrade_character(upgrade):
 			additional_attacks += 1
 		"food":
 			hp += 20
-			hp = clamp(hp,0,maxhp)
+			hp = clamp(hp,0,max_hp)
+	# add upgrade to gui for collected upgrades 
+	adjust_gui_collection(upgrade)
 	#call attack script to refresh everything
 	attack()
 	# delete all the options
@@ -347,6 +384,8 @@ func upgrade_character(upgrade):
 	# hide the level up panel
 	levelPanel.visible = false
 	levelPanel.position = Vector2(800, 50)
+	# change level lable back to level up (for select first weapon
+	levelUpLabel.text = "Level Up!"
 	# unpause the game
 	get_tree().paused = false
 	# recalculate how much exp is left
@@ -354,7 +393,7 @@ func upgrade_character(upgrade):
 	
 ## Gets a random option one at a time
 # TODO: optimize this to get all random items needed
-func get_random_item() -> String:
+func get_random_item(only_types: Array = []) -> String:
 	var db_list: Array = []
 	for upgrade in UpgradeDb.UPGRADES:
 		# if already collected, no need to check
@@ -366,6 +405,10 @@ func get_random_item() -> String:
 		# don't pick food
 		if UpgradeDb.UPGRADES[upgrade]["type"] == "item": 
 			continue
+		# if only certain types are included, check if the upgrade is one of the included types
+		if not only_types.is_empty():
+			if UpgradeDb.UPGRADES[upgrade]["type"] not in only_types:
+				continue
 		# if there are no prereqs it can be added to potential options
 		if UpgradeDb.UPGRADES[upgrade]["prerequisites"].is_empty():
 			db_list.append(upgrade)
@@ -378,9 +421,55 @@ func get_random_item() -> String:
 					break
 			if prereq_filled:
 				db_list.append(upgrade) 
-		
+	
+	# pick a random choice from the valid upgrade options
 	if not db_list.is_empty():
 		var random_item: String = db_list.pick_random()
 		upgrade_options.append(random_item)
 		return random_item
 	return ""
+
+## Changes the timer time based on time from the enemy spawner
+func change_time(new_time: int = 0):
+	# set our player's time to be the new time
+	time = new_time
+	# get minutes and second from overall time
+	var minutes: int = time / 60
+	var seconds: int = time % 60
+	# convert to 00:00 format (double digit minutes and seconds)
+	var minute_str: String = "%02d" %minutes
+	var second_str: String = "%02d" %seconds
+	# dipplay time in the UI
+	timerLabel.text = minute_str + ":" + second_str
+	
+func adjust_gui_collection(upgrade) -> void:
+	
+	# get the upgrade's display name and type
+	var upgraded_display_name: String = UpgradeDb.UPGRADES[upgrade]["display_name"]
+	var upgrade_type: String = UpgradeDb.UPGRADES[upgrade]["type"]
+	# skip items like food
+	if upgrade_type == "item":
+		return
+	# find the already collected display names
+	var collected_display_names: Array = []
+	for collected_upgrade in collected_upgrades:
+		collected_display_names.append(UpgradeDb.UPGRADES[collected_upgrade]["display_name"])
+	# Add upgrade to upgrade UI if it's not already there
+	if not upgraded_display_name in collected_display_names:
+		# create a new item container
+		var new_item: TextureRect = itemContainer.instantiate()
+		# set the item's upgrade value to retirieve the correct icon
+		new_item.upgrade = upgrade
+		# find the type to put in the correct UI subelement (weapon or upgrade)
+		match upgrade_type:
+			"weapon":
+				collectedWeapons.add_child(new_item)
+			"upgrade":
+				collectedUpgrades.add_child(new_item)
+			
+		
+		
+		
+	
+
+	

@@ -40,9 +40,9 @@ region_rect = Rect2(-4000, -4000, 4000, 4000)
 spawns = Array[ExtResource("4_rl4b1")]([SubResource("Resource_fauje"), SubResource("Resource_ryx8b")])
 
 [node name="Loot" type="Node2D" parent="." groups=["loot"]]
-position = Vector2(56, -39)
 
 [node name="TestExperience" parent="Loot" instance=ExtResource("6_0svam")]
 process_mode = 4
 visible = false
+position = Vector2(59, -39)
 exp = 20
