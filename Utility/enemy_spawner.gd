@@ -20,6 +20,8 @@ func _on_timer_timeout() -> void:
 	var enemy_spawns: Array[SpawnInfo] = spawns
 	# loop through all spawns
 	for e in enemy_spawns:
+		if e.disabled:
+			continue
 		# if the spawner is still spawning enemies then continue
 		if time >= e.time_start and time <= e.time_end:
 			# if it is not time to spawn an enemy increase the timer

@@ -4,8 +4,8 @@ extends CharacterBody2D
 @export var movement_speed: float = 20
 @export var hp: int = 10
 @export var knockback_recovery: float = 3.5
-@export var exp = 1
-
+@export var exp: int = 1
+@export var damage: float = 1
 # current knockback
 var knockback: Vector2 = Vector2(0.0, 0.0)
 
@@ -13,6 +13,7 @@ var knockback: Vector2 = Vector2(0.0, 0.0)
 @onready var sprite: Sprite2D = $Sprite2D
 @onready var anim: AnimationPlayer = $AnimationPlayer
 @onready var sound_hit: AudioStreamPlayer2D = $sound_hit
+@onready var hitBox: Area2D = $HitBox
 
 # imported external variables (from other nodes)
 @onready var player: CharacterBody2D = get_tree().get_first_node_in_group("player")
@@ -29,6 +30,7 @@ signal remove_from_list(object: Object)
 func _ready() -> void:
 	# start animation
 	anim.play("walk")
+	hitBox.damage = damage
 
 
 func _physics_process(delta: float) -> void:

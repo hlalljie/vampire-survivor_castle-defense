@@ -13,5 +13,6 @@ class_name SpawnInfo
 @export var enemy_number: int
 # how long between spaawn cycles in seconds
 @export var enemy_spawn_delay: int
+@export var disabled: bool = false
 # current counter for spawn
 var spawn_delay_counter: int = 0

@@ -1,27 +1,96 @@
-[gd_scene load_steps=9 format=3 uid="uid://cuae2wo6wuqmw"]
+[gd_scene load_steps=20 format=3 uid="uid://cuae2wo6wuqmw"]
 
 [ext_resource type="Texture2D" uid="uid://dxh5ckpnhau8i" path="res://Textures/dirt_full_new.png" id="1_re33t"]
 [ext_resource type="PackedScene" uid="uid://dn0h10osvj8l4" path="res://Player/player.tscn" id="2_kcvq5"]
 [ext_resource type="PackedScene" uid="uid://klbxpfh21ssp" path="res://Utility/enemy_spawner.tscn" id="3_d8qwj"]
 [ext_resource type="Script" path="res://Utility/spawn_info.gd" id="4_rl4b1"]
-[ext_resource type="PackedScene" uid="uid://cpsc42ifwfbwm" path="res://Enemy/enemy.tscn" id="5_wgxhe"]
+[ext_resource type="PackedScene" uid="uid://cpsc42ifwfbwm" path="res://Enemy/enemy_kolbold_weak.tscn" id="5_wgxhe"]
 [ext_resource type="PackedScene" uid="uid://b1a34ijbcg85y" path="res://Objects/experience_gem.tscn" id="6_0svam"]
+[ext_resource type="PackedScene" uid="uid://dxux5yg522r40" path="res://Enemy/enemy_kolbold_strong.tscn" id="6_ah3eh"]
+[ext_resource type="PackedScene" uid="uid://bf0b7x5jfm7xk" path="res://Enemy/enemy_cyclops.tscn" id="7_b3opl"]
+[ext_resource type="PackedScene" uid="uid://cubr5d2e745ex" path="res://Enemy/enemy_juggernaut.tscn" id="8_bds22"]
+[ext_resource type="PackedScene" uid="uid://clvxi4y74ih2k" path="res://Enemy/enemy_amoeba_boss.tscn" id="9_ob0vq"]
 
-[sub_resource type="Resource" id="Resource_fauje"]
+[sub_resource type="Resource" id="Resource_g8uvd"]
 script = ExtResource("4_rl4b1")
 time_start = 0
-time_end = 60
+time_end = 30
 enemy = ExtResource("5_wgxhe")
 enemy_number = 1
-enemy_spawn_delay = 1
+enemy_spawn_delay = 0
+disabled = false
 
-[sub_resource type="Resource" id="Resource_ryx8b"]
+[sub_resource type="Resource" id="Resource_b6sh2"]
 script = ExtResource("4_rl4b1")
-time_start = 0
-time_end = 999
+time_start = 30
+time_end = 210
 enemy = ExtResource("5_wgxhe")
-enemy_number = 10
+enemy_number = 2
+enemy_spawn_delay = 0
+disabled = false
+
+[sub_resource type="Resource" id="Resource_brtpn"]
+script = ExtResource("4_rl4b1")
+time_start = 60
+time_end = 180
+enemy = ExtResource("6_ah3eh")
+enemy_number = 1
+enemy_spawn_delay = 1
+disabled = false
+
+[sub_resource type="Resource" id="Resource_f7h7t"]
+script = ExtResource("4_rl4b1")
+time_start = 180
+time_end = 210
+enemy = ExtResource("7_b3opl")
+enemy_number = 1
 enemy_spawn_delay = 2
+disabled = false
+
+[sub_resource type="Resource" id="Resource_pnj35"]
+script = ExtResource("4_rl4b1")
+time_start = 210
+time_end = 240
+enemy = ExtResource("6_ah3eh")
+enemy_number = 2
+enemy_spawn_delay = 0
+disabled = false
+
+[sub_resource type="Resource" id="Resource_765ik"]
+script = ExtResource("4_rl4b1")
+time_start = 240
+time_end = 270
+enemy = ExtResource("7_b3opl")
+enemy_number = 1
+enemy_spawn_delay = 0
+disabled = false
+
+[sub_resource type="Resource" id="Resource_vj8n6"]
+script = ExtResource("4_rl4b1")
+time_start = 240
+time_end = 240
+enemy = ExtResource("8_bds22")
+enemy_number = 1
+enemy_spawn_delay = 0
+disabled = false
+
+[sub_resource type="Resource" id="Resource_pbnm3"]
+script = ExtResource("4_rl4b1")
+time_start = 270
+time_end = 340
+enemy = ExtResource("6_ah3eh")
+enemy_number = 1
+enemy_spawn_delay = 0
+disabled = false
+
+[sub_resource type="Resource" id="Resource_0l3pi"]
+script = ExtResource("4_rl4b1")
+time_start = 350
+time_end = 350
+enemy = ExtResource("9_ob0vq")
+enemy_number = 1
+enemy_spawn_delay = 0
+disabled = false
 
 [node name="World" type="Node2D"]
 
@@ -37,7 +106,7 @@ region_rect = Rect2(-4000, -4000, 4000, 4000)
 [node name="Player" parent="." instance=ExtResource("2_kcvq5")]
 
 [node name="EnemySpawner" parent="." instance=ExtResource("3_d8qwj")]
-spawns = Array[ExtResource("4_rl4b1")]([SubResource("Resource_fauje"), SubResource("Resource_ryx8b")])
+spawns = Array[ExtResource("4_rl4b1")]([SubResource("Resource_g8uvd"), SubResource("Resource_b6sh2"), SubResource("Resource_brtpn"), SubResource("Resource_f7h7t"), SubResource("Resource_pnj35"), SubResource("Resource_765ik"), SubResource("Resource_vj8n6"), SubResource("Resource_pbnm3"), SubResource("Resource_0l3pi")])
 
 [node name="Loot" type="Node2D" parent="." groups=["loot"]]
 

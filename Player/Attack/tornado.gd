@@ -99,6 +99,7 @@ func _ready():
 func _physics_process(delta: float) -> void:
 	position += angle*speed*delta
 
+## erase tornado when timer is done (20s)
 func _on_timer_timeout() -> void:
-	emit_signal("remove_from_list")
+	emit_signal("remove_from_list", self)
 	queue_free()
