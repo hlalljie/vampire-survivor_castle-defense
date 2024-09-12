@@ -5,7 +5,7 @@ extends CharacterBody2D
 @export var hp: int = 10
 @export var knockback_recovery: float = 3.5
 @export var exp: int = 1
-@export var damage: float = 1
+@export var enemy_damage: float = 1
 # current knockback
 var knockback: Vector2 = Vector2(0.0, 0.0)
 
@@ -30,7 +30,7 @@ signal remove_from_list(object: Object)
 func _ready() -> void:
 	# start animation
 	anim.play("walk")
-	hitBox.damage = damage
+	hitBox.damage = enemy_damage
 
 
 func _physics_process(delta: float) -> void:

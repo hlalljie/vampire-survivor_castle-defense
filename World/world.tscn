@@ -1,4 +1,4 @@
-[gd_scene load_steps=20 format=3 uid="uid://cuae2wo6wuqmw"]
+[gd_scene load_steps=22 format=3 uid="uid://cuae2wo6wuqmw"]
 
 [ext_resource type="Texture2D" uid="uid://dxh5ckpnhau8i" path="res://Textures/dirt_full_new.png" id="1_re33t"]
 [ext_resource type="PackedScene" uid="uid://dn0h10osvj8l4" path="res://Player/player.tscn" id="2_kcvq5"]
@@ -10,6 +10,8 @@
 [ext_resource type="PackedScene" uid="uid://bf0b7x5jfm7xk" path="res://Enemy/enemy_cyclops.tscn" id="7_b3opl"]
 [ext_resource type="PackedScene" uid="uid://cubr5d2e745ex" path="res://Enemy/enemy_juggernaut.tscn" id="8_bds22"]
 [ext_resource type="PackedScene" uid="uid://clvxi4y74ih2k" path="res://Enemy/enemy_amoeba_boss.tscn" id="9_ob0vq"]
+[ext_resource type="AudioStream" uid="uid://b601vrk4eimm1" path="res://Audio/Music/battleThemeA.mp3" id="11_70mrg"]
+[ext_resource type="Script" path="res://World/sound_music.gd" id="12_vgciu"]
 
 [sub_resource type="Resource" id="Resource_g8uvd"]
 script = ExtResource("4_rl4b1")
@@ -115,3 +117,12 @@ process_mode = 4
 visible = false
 position = Vector2(59, -39)
 exp = 20
+
+[node name="sound_music" type="AudioStreamPlayer2D" parent="."]
+process_mode = 3
+stream = ExtResource("11_70mrg")
+volume_db = -15.0
+autoplay = true
+script = ExtResource("12_vgciu")
+
+[connection signal="player_death" from="Player" to="sound_music" method="_on_player_player_death"]

@@ -68,7 +68,7 @@ func enemy_hit(charge: int = 1):
 	# despawn if necessary
 	if hp <= 0:
 		# remove from hurtbox list
-		emit_signal("remove_from_list", self)
+		remove_from_list.emit(self)
 		queue_free()
 
 ## Delete projectile after some time is passed (and is offscreen)

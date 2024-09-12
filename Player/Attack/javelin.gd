@@ -95,7 +95,7 @@ func add_paths() -> void:
 	# play attack sound
 	sound_attack.play()
 	# remove from hit_once hurt box already attacked list so it can attack more than once
-	emit_signal("remove_from_list", self)
+	remove_from_list.emit(self)
 	# create new list of targets
 	target_list.clear()
 	var counter: int = 0

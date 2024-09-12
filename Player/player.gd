@@ -8,7 +8,7 @@ var last_movement: Vector2 = Vector2.UP
 var time: int = 0 
 
 # Experience
-var exp: int = 0
+var experience: int = 0
 var exp_level: int = 1
 var collected_exp = 0
 
@@ -64,6 +64,11 @@ var close_enemies: Array = []
 @onready var collectedWeapons: GridContainer = get_node("%CollectedWeapons")
 @onready var collectedUpgrades: GridContainer = get_node("%CollectedUpgrades")
 @onready var itemContainer: Resource = preload("res://GUI/item_container.tscn")
+# Death GUI
+@onready var deathPanel: Panel = get_node('%DeathPanel')
+@onready var resultLabel: Label = get_node("%ResultLabel")
+@onready var soundVictory: AudioStreamPlayer = get_node("%sound_victory")
+@onready var soundLose: AudioStreamPlayer = get_node("%sound_lose")
 
 # Upgrades
 var collected_upgrades: Array = []
@@ -74,11 +79,14 @@ var spell_cooldown: float = 0
 var spell_size: float = 0
 var additional_attacks = 0
 
+# Signal Player Death
+signal player_death
+
 func _ready() -> void:
 	select_first_weapon()
 	# proc all attacks
 	attack()
-	set_exp_bar(exp, calculate_exp_cap())
+	set_exp_bar(experience, calculate_exp_cap())
 	# setup health bar
 	_on_hurt_box_hurt(0, 0, 0)
 
@@ -138,6 +146,8 @@ func _on_hurt_box_hurt(damage: int, _angle, _knockback) -> void:
 	print("hp:", hp)
 	healthBar.max_value = max_hp
 	healthBar.value = hp	
+	if hp <= 0:
+		death()
 
 ## Gain ammo every time the timer is up
 func _on_ice_spear_timer_timeout() -> void:
@@ -246,9 +256,9 @@ func calculate_exp(gem_exp: int):
 	var exp_req = calculate_exp_cap()
 	collected_exp += gem_exp
 	 # level up
-	if exp + collected_exp >= exp_req:
-		collected_exp -= exp_req - exp
-		exp = 0
+	if experience + collected_exp >= exp_req:
+		collected_exp -= exp_req - experience
+		experience = 0
 		# calculate gain with any leftover experience after leveling
 		exp_req = calculate_exp_cap()
 		# update player level
@@ -257,13 +267,13 @@ func calculate_exp(gem_exp: int):
 		#calculate_exp(0)
 	# add collected experience to our total
 	else:
-		exp += collected_exp
+		experience += collected_exp
 		collected_exp = 0
-	set_exp_bar(exp, exp_req)
+	set_exp_bar(experience, exp_req)
 		
 ## Calculate current level's total experience needed
 func calculate_exp_cap():
-	# bracketed exp caps that carry over previous bracket values
+	# bracketed experience caps that carry over previous bracket values
 	var exp_cap = exp_level
 	if exp_level < 20:
 		exp_cap = exp_level * 5
@@ -388,7 +398,7 @@ func upgrade_character(upgrade):
 	levelUpLabel.text = "Level Up!"
 	# unpause the game
 	get_tree().paused = false
-	# recalculate how much exp is left
+	# recalculate how much experience is left
 	calculate_exp(0)
 	
 ## Gets a random option one at a time
@@ -466,10 +476,27 @@ func adjust_gui_collection(upgrade) -> void:
 				collectedWeapons.add_child(new_item)
 			"upgrade":
 				collectedUpgrades.add_child(new_item)
-			
-		
-		
-		
-	
 
+## Handles player death
+func death():
+	# show the death panel
+	deathPanel.visible = true
+	# send death signal
+	emit_signal("player_death")
+	#pause the game
+	get_tree().paused = true
+	# move death panel into position
+	var tween: Tween = deathPanel.create_tween()
+	tween.tween_property(deathPanel, "position", Vector2(220, 50), 3.0).set_trans(Tween.TRANS_QUINT).set_ease(Tween.EASE_OUT)
+	tween.play()
+	# Decide if winner of loser vased on the time they survived
+	if time >= 350:
+		resultLabel.text = "You Win!"
+		soundVictory.play()
+	else:
+		resultLabel.text = "You Lose"
+		soundLose.play()
 	
+func _on_menu_button_click_end() -> void:
+	get_tree().paused = false
+	var _level: Error = get_tree().change_scene_to_file("res://TitleScreen/menu.tscn")
