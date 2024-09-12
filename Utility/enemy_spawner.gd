@@ -9,7 +9,7 @@ var time: int = 0
 signal change_time(time: int)
 
 func _ready() -> void:
-	connect("change_time", Callable(player, "change_time"))
+	change_time.connect(Callable(player, "change_time"))
 
 ## Counts time and spawns enemies based on time
 func _on_timer_timeout() -> void:

@@ -4,7 +4,7 @@ extends CharacterBody2D
 @export var movement_speed: float = 20
 @export var hp: int = 10
 @export var knockback_recovery: float = 3.5
-@export var exp: int = 1
+@export var experience: int = 1
 @export var enemy_damage: float = 1
 # current knockback
 var knockback: Vector2 = Vector2(0.0, 0.0)
@@ -33,7 +33,7 @@ func _ready() -> void:
 	hitBox.damage = enemy_damage
 
 
-func _physics_process(delta: float) -> void:
+func _physics_process(_delta: float) -> void:
 	# apply knockback recovery to knockback
 	knockback = knockback.move_toward(Vector2.ZERO, knockback_recovery)
 	# Get the direction(unit vector) of the the enemy position towards the player position
@@ -53,7 +53,7 @@ func _physics_process(delta: float) -> void:
 	
 func death():
 	#print("Enemy killed")
-	emit_signal("remove_from_list", self)
+	remove_from_list.emit(self)
 	# trigger death explosion
 	var enemy_death: Sprite2D = death_anim.instantiate()
 	enemy_death.scale = sprite.scale
@@ -63,7 +63,7 @@ func death():
 	# Drop experience
 	var new_gem: Area2D = exp_gem.instantiate()
 	new_gem.global_position = global_position
-	new_gem.exp = exp
+	new_gem.experience = experience
 	loot_base.call_deferred("add_child", new_gem)
 	
 	# deletes the enemy from the scene

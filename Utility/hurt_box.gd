@@ -50,7 +50,7 @@ func _on_area_entered(area: Area2D) -> void:
 				knockback = area.knockback_amount
 			
 			# send hurt signal
-			emit_signal("hurt", damage, angle, knockback)
+			hurt.emit(damage, angle, knockback)
 			# respond to projectile with hp to register a hit
 			if area.has_method("enemy_hit"):
 				area.enemy_hit(1)

@@ -62,7 +62,7 @@ script = ExtResource("1_7y2kg")
 movement_speed = 16.0
 hp = 100
 knockback_recovery = 10.0
-exp = 7
+experience = 5
 enemy_damage = 5.0
 
 [node name="Sprite2D" type="Sprite2D" parent="."]

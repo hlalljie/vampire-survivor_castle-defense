@@ -1,6 +1,6 @@
 extends Area2D
 
-@export var exp: int = 1
+@export var experience: int = 1
 
 var spr_green: Resource = preload("res://Textures/Items/Gems/Gem_green.png")
 var spr_blue: Resource = preload("res://Textures/Items/Gems/Gem_blue.png")
@@ -19,10 +19,10 @@ func _ready():
 ## Sets the correct sprite based on the experience amount
 func set_experience_sprite() -> void:
 	# green already by default
-	if exp < 5:
+	if experience < 5:
 		return
 	# blue 5 or greater
-	if exp < 25:
+	if experience < 25:
 		sprite.texture = spr_blue
 	# red 25 or greater
 	else:
@@ -40,7 +40,7 @@ func collect() -> int:
 	# don't queue free yet as sound is still playing
 	collision.call_deferred("set", "disabled", true)
 	sprite.visible = false
-	return exp
+	return experience
 	
 func _on_sound_collected_finished() -> void:
 	queue_free()

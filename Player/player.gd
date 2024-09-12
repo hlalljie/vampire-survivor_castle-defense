@@ -90,7 +90,7 @@ func _ready() -> void:
 	# setup health bar
 	_on_hurt_box_hurt(0, 0, 0)
 
-func _physics_process(delta: float) -> void:
+func _physics_process(_delta: float) -> void:
 	movement()
 	
 func movement() -> void:
@@ -215,9 +215,9 @@ func spawn_javelin():
 		calc_spawns -= 1
 	# update current javelins
 	var current_javelins = javelinBase.get_children()
-	for javelin in current_javelins:
-		if javelin.has_method("update_javelin"):
-			javelin.update_javelin()
+	for jav in current_javelins:
+		if jav.has_method("update_javelin"):
+			jav.update_javelin()
 		
 	
 # Finds a random target direction from the list of close enemies
@@ -298,7 +298,6 @@ func levelUp() -> void:
 	tween.play()
 	levelPanel.visible = true
 	# upgrade options population
-	var options: int = 0
 	var options_max: int = 3
 	for i in range(options_max):
 		# create a single option
@@ -320,7 +319,6 @@ func select_first_weapon() -> void:
 	tween.play()
 	levelPanel.visible = true
 	# upgrade options population
-	var options: int = 0
 	var options_max: int = 3
 	for i in range(options_max):
 		# create a single option
@@ -444,7 +442,8 @@ func change_time(new_time: int = 0):
 	# set our player's time to be the new time
 	time = new_time
 	# get minutes and second from overall time
-	var minutes: int = time / 60
+	@warning_ignore("integer_division")
+	var minutes: int = int(time / 60)
 	var seconds: int = time % 60
 	# convert to 00:00 format (double digit minutes and seconds)
 	var minute_str: String = "%02d" %minutes
@@ -482,7 +481,7 @@ func death():
 	# show the death panel
 	deathPanel.visible = true
 	# send death signal
-	emit_signal("player_death")
+	player_death.emit()
 	#pause the game
 	get_tree().paused = true
 	# move death panel into position

@@ -26,7 +26,7 @@ func _input(event):
 	# if the user clicks on the item then emit that they have selected that upgrade
 	if event.is_action("click"):
 		if mouse_over:
-			emit_signal("selected_upgrade", item)
+			selected_upgrade.emit(item)
 
 func _on_mouse_entered() -> void:
 	mouse_over = true
