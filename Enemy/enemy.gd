@@ -1,5 +1,7 @@
 extends CharacterBody2D
 
+class_name Enemy
+
 # enemy stats
 @export var movement_speed: float = 20
 @export var hp: int = 10
