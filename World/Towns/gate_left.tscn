@@ -1,0 +1,35 @@
+[gd_scene load_steps=6 format=3 uid="uid://c2x4vfd0j8y74"]
+
+[ext_resource type="PackedScene" uid="uid://c3ntv7ypt3824" path="res://World/Towns/door.tscn" id="1_bdrbn"]
+[ext_resource type="Script" path="res://World/Towns/gate.gd" id="2_68k6u"]
+[ext_resource type="Texture2D" uid="uid://do35tj1uybxks" path="res://Textures/World/gate_left.png" id="2_h1byu"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_3vsej"]
+size = Vector2(6, 64)
+
+[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_gt0hk"]
+radius = 13.0
+height = 66.0
+
+[node name="GateLeft" instance=ExtResource("1_bdrbn")]
+position = Vector2(-6.49, -16)
+script = ExtResource("2_68k6u")
+open_distance = Vector2(0, 64)
+
+[node name="SpriteController" parent="." index="0"]
+clip_contents = true
+offset_right = 13.0
+offset_bottom = 64.0
+size_flags_stretch_ratio = 0.0
+
+[node name="Sprite2D" parent="SpriteController" index="0"]
+texture = ExtResource("2_h1byu")
+centered = false
+
+[node name="CollisionShape2D" parent="." index="1"]
+position = Vector2(6.49, 32)
+shape = SubResource("RectangleShape2D_3vsej")
+
+[node name="CollisionShape2D" parent="ProximityDetector" index="0"]
+position = Vector2(6.49, 32)
+shape = SubResource("CapsuleShape2D_gt0hk")

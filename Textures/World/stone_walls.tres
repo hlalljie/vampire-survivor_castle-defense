@@ -1,17 +1,22 @@
-[gd_resource type="TileSet" load_steps=5 format=3 uid="uid://cl40t3qkqxb70"]
+[gd_resource type="TileSet" load_steps=7 format=3 uid="uid://cl40t3qkqxb70"]
 
 [ext_resource type="Texture2D" uid="uid://c3sm20tk2r3tk" path="res://Textures/World/stone_walls.png" id="1_tu0hc"]
 [ext_resource type="PackedScene" uid="uid://b8h2ufvptauic" path="res://World/Towns/gate_top.tscn" id="1_vck2s"]
+[ext_resource type="PackedScene" uid="uid://c2x4vfd0j8y74" path="res://World/Towns/gate_left.tscn" id="2_7nsh3"]
+[ext_resource type="PackedScene" uid="uid://b0spjvnu7cji4" path="res://World/Towns/gate_right.tscn" id="3_gw030"]
 
 [sub_resource type="TileSetScenesCollectionSource" id="TileSetScenesCollectionSource_6ixd1"]
+resource_name = "Gates"
 scenes/0/scene = ExtResource("1_vck2s")
+scenes/2/scene = ExtResource("2_7nsh3")
+scenes/3/scene = ExtResource("3_gw030")
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_uuy6i"]
 texture = ExtResource("1_tu0hc")
 texture_region_size = Vector2i(32, 32)
 1:13/0 = 0
 1:12/0 = 0
-1:12/0/physics_layer_0/polygon_0/points = PackedVector2Array(-16, -16, 16, -16, 16, 16, -16, 16)
+1:12/0/physics_layer_0/polygon_0/points = PackedVector2Array(-16, 8.125, 16, 8.125, 16, 16, -16, 16)
 1:14/size_in_atlas = Vector2i(1, 2)
 1:14/0 = 0
 1:14/0/texture_origin = Vector2i(0, -16)

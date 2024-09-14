@@ -1,6 +1,7 @@
-[gd_scene load_steps=5 format=3 uid="uid://b8h2ufvptauic"]
+[gd_scene load_steps=6 format=3 uid="uid://b8h2ufvptauic"]
 
 [ext_resource type="PackedScene" uid="uid://c3ntv7ypt3824" path="res://World/Towns/door.tscn" id="1_i8v0c"]
+[ext_resource type="Script" path="res://World/Towns/gate.gd" id="2_e71u3"]
 [ext_resource type="Texture2D" uid="uid://do5tl4rii7064" path="res://Textures/World/gate_top_bottom.png" id="2_lwt1w"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_srtgt"]
@@ -9,11 +10,23 @@ size = Vector2(64, 16)
 [sub_resource type="CircleShape2D" id="CircleShape2D_0wc12"]
 radius = 34.0
 
-[node name="Gate" instance=ExtResource("1_i8v0c")]
+[node name="GateTop" instance=ExtResource("1_i8v0c")]
 position = Vector2(16, 19)
+script = ExtResource("2_e71u3")
+open_distance = Vector2(0, 70)
+
+[node name="SpriteController" parent="." index="0"]
+clip_contents = true
+offset_left = -32.0
+offset_top = -35.5
+offset_right = 32.0
+offset_bottom = 35.5
 
 [node name="Sprite2D" parent="SpriteController" index="0"]
+show_behind_parent = true
+texture_filter = 1
 texture = ExtResource("2_lwt1w")
+centered = false
 
 [node name="CollisionShape2D" parent="." index="1"]
 position = Vector2(0, 28)
