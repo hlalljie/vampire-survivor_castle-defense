@@ -1,7 +1,8 @@
-[gd_scene load_steps=22 format=3 uid="uid://cuae2wo6wuqmw"]
+[gd_scene load_steps=23 format=3 uid="uid://cuae2wo6wuqmw"]
 
 [ext_resource type="Texture2D" uid="uid://dxh5ckpnhau8i" path="res://Textures/dirt_full_new.png" id="1_re33t"]
 [ext_resource type="PackedScene" uid="uid://dn0h10osvj8l4" path="res://Player/player.tscn" id="2_kcvq5"]
+[ext_resource type="PackedScene" uid="uid://cl0pb1nnbeawa" path="res://World/Towns/simple_town.tscn" id="2_nw4au"]
 [ext_resource type="PackedScene" uid="uid://klbxpfh21ssp" path="res://Utility/enemy_spawner.tscn" id="3_d8qwj"]
 [ext_resource type="Script" path="res://Utility/spawn_info.gd" id="4_rl4b1"]
 [ext_resource type="PackedScene" uid="uid://cpsc42ifwfbwm" path="res://Enemy/enemy_kolbold_weak.tscn" id="5_wgxhe"]
@@ -109,6 +110,9 @@ region_rect = Rect2(-4000, -4000, 4000, 4000)
 
 [node name="EnemySpawner" parent="." instance=ExtResource("3_d8qwj")]
 spawns = Array[ExtResource("4_rl4b1")]([SubResource("Resource_g8uvd"), SubResource("Resource_b6sh2"), SubResource("Resource_brtpn"), SubResource("Resource_f7h7t"), SubResource("Resource_pnj35"), SubResource("Resource_765ik"), SubResource("Resource_vj8n6"), SubResource("Resource_pbnm3"), SubResource("Resource_0l3pi")])
+
+[node name="CastleSimple" parent="." instance=ExtResource("2_nw4au")]
+position = Vector2(1434, 519)
 
 [node name="Loot" type="Node2D" parent="." groups=["loot"]]
 
