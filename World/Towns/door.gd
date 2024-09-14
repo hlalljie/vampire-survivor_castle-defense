@@ -1,29 +1,24 @@
-extends Area2D
+extends StaticBody2D
 
 class_name Door
 
-@export var proximity_radius: float = 50.0
 @export var allowed_groups: Array[StringName] = [&"player"]
 @export var is_open: bool = false
 
+@onready var sprite_controller: Control = $SpriteController
+@onready var door_sprite: Sprite2D = $SpriteController/Sprite2D
+@onready var door_collision: CollisionShape2D = $CollisionShape2D
+@onready var proximity_area: Area2D = $ProximityDetector
+@onready var proximity_collision: CollisionShape2D = $ProximityDetector/CollisionShape2D
 
-# Called when the node enters the scene tree for the first time.
-func _ready() -> void:
-	pass # Replace with function body.
+@onready var initial_color = door_sprite.modulate
 
-
-# Called every frame. 'delta' is the elapsed time since the previous frame.
-func _process(_delta: float) -> void:
-	pass
-
-func setup_proximity_area():
-	var shape = CircleShape2D.new()
-	shape.radius = proximity_radius
-	$ProximityArea/CollisionShape2D.shape = shape
+func _ready():
+	connect_signals()
 
 func connect_signals():
-	$ProximityArea.body_entered.connect(_on_body_entered)
-	$ProximityArea.body_exited.connect(_on_body_exited)
+	proximity_area.body_entered.connect(_on_body_entered)
+	proximity_area.body_exited.connect(_on_body_exited)
 
 func _on_body_entered(body):
 	if is_body_in_allowed(body):
@@ -31,9 +26,9 @@ func _on_body_entered(body):
 		return
 
 func _on_body_exited(body):
-		if is_body_in_allowed(body):
-			close()
-			return
+	if is_body_in_allowed(body):
+		close()
+		return
 
 func is_body_in_allowed(body):
 	for group in allowed_groups:
@@ -44,8 +39,24 @@ func is_body_in_allowed(body):
 func open():
 	if not is_open:
 		is_open = true
-		
+		door_collision.set_deferred("disabled", true)
+		_animate_open()
+
 
 func close():
 	if is_open:
 		is_open = false
+		door_collision.set_deferred("disabled", false)
+		_animate_close()
+
+func _animate_open() -> void:
+	var transparent: Color = initial_color
+	transparent.a = 0
+	var tween: Tween = create_tween()
+	tween.tween_property(door_sprite, "modulate", transparent, 1).set_trans(Tween.TRANS_QUINT).set_ease(Tween.EASE_OUT)
+	tween.play()
+
+func _animate_close() -> void:
+	var tween: Tween = create_tween()
+	tween.tween_property(door_sprite, "modulate", initial_color, 1).set_trans(Tween.TRANS_QUINT).set_ease(Tween.EASE_OUT)
+	tween.play()

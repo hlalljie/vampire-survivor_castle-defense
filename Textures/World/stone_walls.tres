@@ -1,6 +1,10 @@
-[gd_resource type="TileSet" load_steps=3 format=3 uid="uid://cl40t3qkqxb70"]
+[gd_resource type="TileSet" load_steps=5 format=3 uid="uid://cl40t3qkqxb70"]
 
 [ext_resource type="Texture2D" uid="uid://c3sm20tk2r3tk" path="res://Textures/World/stone_walls.png" id="1_tu0hc"]
+[ext_resource type="PackedScene" uid="uid://b8h2ufvptauic" path="res://World/Towns/gate_top.tscn" id="1_vck2s"]
+
+[sub_resource type="TileSetScenesCollectionSource" id="TileSetScenesCollectionSource_6ixd1"]
+scenes/0/scene = ExtResource("1_vck2s")
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_uuy6i"]
 texture = ExtResource("1_tu0hc")
@@ -262,9 +266,10 @@ texture_region_size = Vector2i(32, 32)
 1:21/size_in_atlas = Vector2i(2, 3)
 1:21/0 = 0
 1:21/0/texture_origin = Vector2i(-16, -35)
-1:21/0/physics_layer_0/polygon_0/points = PackedVector2Array(-16.3408, 44.952, 48.5505, 45.424, 48.4325, 60.172, -16.3408, 58.9921)
+1:21/0/physics_layer_0/polygon_0/points = PackedVector2Array(-16.3408, 44.952, 48.5505, 45.424, 48.9045, 59.936, -16.3408, 58.9921)
 
 [resource]
 tile_size = Vector2i(32, 32)
 physics_layer_0/collision_layer = 1
 sources/2 = SubResource("TileSetAtlasSource_uuy6i")
+sources/0 = SubResource("TileSetScenesCollectionSource_6ixd1")

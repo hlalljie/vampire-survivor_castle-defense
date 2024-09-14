@@ -112,7 +112,7 @@ region_rect = Rect2(-4000, -4000, 4000, 4000)
 spawns = Array[ExtResource("4_rl4b1")]([SubResource("Resource_g8uvd"), SubResource("Resource_b6sh2"), SubResource("Resource_brtpn"), SubResource("Resource_f7h7t"), SubResource("Resource_pnj35"), SubResource("Resource_765ik"), SubResource("Resource_vj8n6"), SubResource("Resource_pbnm3"), SubResource("Resource_0l3pi")])
 
 [node name="CastleSimple" parent="." instance=ExtResource("2_nw4au")]
-position = Vector2(1434, 519)
+position = Vector2(0, -141)
 
 [node name="Loot" type="Node2D" parent="." groups=["loot"]]
 

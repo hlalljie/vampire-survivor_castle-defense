@@ -1,0 +1,27 @@
+[gd_scene load_steps=5 format=3 uid="uid://b8h2ufvptauic"]
+
+[ext_resource type="PackedScene" uid="uid://c3ntv7ypt3824" path="res://World/Towns/door.tscn" id="1_i8v0c"]
+[ext_resource type="Texture2D" uid="uid://do5tl4rii7064" path="res://Textures/World/gate_top_bottom.png" id="2_lwt1w"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_srtgt"]
+size = Vector2(64, 16)
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_0wc12"]
+radius = 34.0
+
+[node name="Gate" instance=ExtResource("1_i8v0c")]
+position = Vector2(16, 19)
+
+[node name="Sprite2D" parent="SpriteController" index="0"]
+texture = ExtResource("2_lwt1w")
+
+[node name="CollisionShape2D" parent="." index="1"]
+position = Vector2(0, 28)
+shape = SubResource("RectangleShape2D_srtgt")
+
+[node name="ProximityDetector" parent="." index="2"]
+collision_layer = 0
+
+[node name="CollisionShape2D" parent="ProximityDetector" index="0"]
+position = Vector2(0, 34)
+shape = SubResource("CircleShape2D_0wc12")
