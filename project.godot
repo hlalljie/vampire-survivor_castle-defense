@@ -29,6 +29,10 @@ window/size/window_height_override=640
 window/stretch/mode="canvas_items"
 window/dpi/allow_hidpi=false
 
+[editor_plugins]
+
+enabled=PackedStringArray("res://addons/TilemapSegmentEditor/plugin.cfg")
+
 [global_group]
 
 player=""

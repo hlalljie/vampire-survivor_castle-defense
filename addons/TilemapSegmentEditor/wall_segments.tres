@@ -1,0 +1,7 @@
+[gd_resource type="Resource" script_class="SegmentData" load_steps=2 format=3 uid="uid://d1lkqij46klr7"]
+
+[ext_resource type="Script" path="res://addons/TilemapSegmentEditor/segment_data.gd" id="1_70812"]
+
+[resource]
+script = ExtResource("1_70812")
+segments = []
