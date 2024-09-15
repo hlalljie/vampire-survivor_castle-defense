@@ -57,7 +57,7 @@ size = Vector2(12, 19)
 [node name="enemy_kolbold_weak" type="CharacterBody2D"]
 scale = Vector2(0.75, 0.75)
 collision_layer = 5
-collision_mask = 7
+collision_mask = 23
 motion_mode = 1
 script = ExtResource("1_ubopo")
 
@@ -83,7 +83,7 @@ position = Vector2(0.5, 2)
 shape = SubResource("RectangleShape2D_jthxc")
 
 [node name="HitBox" parent="." instance=ExtResource("4_nhb80")]
-collision_layer = 2
+collision_layer = 18
 
 [node name="CollisionShape2D" parent="HitBox" index="0"]
 position = Vector2(1, 3)

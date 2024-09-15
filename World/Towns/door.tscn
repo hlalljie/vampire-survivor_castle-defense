@@ -22,6 +22,9 @@ size_flags_vertical = 0
 
 [node name="Sprite2D" type="Sprite2D" parent="SpriteController"]
 
+[node name="DestroyedSprite" type="Sprite2D" parent="."]
+visible = false
+
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
 
 [node name="ProximityDetector" type="Area2D" parent="."]

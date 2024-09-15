@@ -1,8 +1,13 @@
-[gd_scene load_steps=6 format=3 uid="uid://b0spjvnu7cji4"]
+[gd_scene load_steps=9 format=3 uid="uid://b0spjvnu7cji4"]
 
 [ext_resource type="PackedScene" uid="uid://c3ntv7ypt3824" path="res://World/Towns/door.tscn" id="1_8lyyj"]
 [ext_resource type="Script" path="res://World/Towns/gate.gd" id="2_0jf3p"]
 [ext_resource type="Texture2D" uid="uid://u547d86t5au8" path="res://Textures/World/gate_right.png" id="3_actup"]
+[ext_resource type="PackedScene" uid="uid://c6lj84u0fegmg" path="res://Utility/hurt_box.tscn" id="4_hipc6"]
+[ext_resource type="Texture2D" uid="uid://bxopfr7es3ux2" path="res://Textures/World/broken_gate_left_right.png" id="4_n2y7e"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_jeixe"]
+size = Vector2(10, 64)
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_3vsej"]
 size = Vector2(6, 64)
@@ -14,7 +19,9 @@ height = 66.0
 [node name="GateRight" instance=ExtResource("1_8lyyj")]
 position = Vector2(-3.32, -16)
 script = ExtResource("2_0jf3p")
-open_distance = Vector2(0, 64)
+open_distance = Vector2(0, 70)
+hp = 500
+damaged_by = Array[StringName]([&"enemy"])
 
 [node name="SpriteController" parent="." index="0"]
 clip_contents = true
@@ -26,13 +33,28 @@ size_flags_stretch_ratio = 0.0
 texture = ExtResource("3_actup")
 centered = false
 
-[node name="CollisionShape2D" parent="." index="1"]
+[node name="DestroyedSprite" parent="." index="1"]
+position = Vector2(3.32, 32)
+texture = ExtResource("4_n2y7e")
+
+[node name="HurtBox" parent="." index="2" instance=ExtResource("4_hipc6")]
+collision_mask = 16
+
+[node name="CollisionShape2D" parent="HurtBox" index="0"]
+position = Vector2(3.32, 32)
+shape = SubResource("RectangleShape2D_jeixe")
+
+[node name="CollisionShape2D" parent="." index="3"]
 position = Vector2(3.81, 32)
 shape = SubResource("RectangleShape2D_3vsej")
 
-[node name="ProximityDetector" parent="." index="2"]
+[node name="ProximityDetector" parent="." index="4"]
 position = Vector2(-2.68, 0)
 
 [node name="CollisionShape2D" parent="ProximityDetector" index="0"]
 position = Vector2(6.49, 32)
 shape = SubResource("CapsuleShape2D_gt0hk")
+
+[connection signal="hurt" from="HurtBox" to="." method="_on_hurt_box_hurt"]
+
+[editable path="HurtBox"]

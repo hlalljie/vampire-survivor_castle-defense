@@ -1,8 +1,13 @@
-[gd_scene load_steps=6 format=3 uid="uid://b8h2ufvptauic"]
+[gd_scene load_steps=9 format=3 uid="uid://b8h2ufvptauic"]
 
 [ext_resource type="PackedScene" uid="uid://c3ntv7ypt3824" path="res://World/Towns/door.tscn" id="1_i8v0c"]
 [ext_resource type="Script" path="res://World/Towns/gate.gd" id="2_e71u3"]
 [ext_resource type="Texture2D" uid="uid://do5tl4rii7064" path="res://Textures/World/gate_top_bottom.png" id="2_lwt1w"]
+[ext_resource type="Texture2D" uid="uid://bsn4tdbhlvc8d" path="res://Textures/World/broken_gate_top_bottom.png" id="4_0it8w"]
+[ext_resource type="PackedScene" uid="uid://c6lj84u0fegmg" path="res://Utility/hurt_box.tscn" id="5_ibokq"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_u568o"]
+size = Vector2(64, 18)
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_srtgt"]
 size = Vector2(64, 16)
@@ -14,6 +19,8 @@ radius = 34.0
 position = Vector2(16, 19)
 script = ExtResource("2_e71u3")
 open_distance = Vector2(0, 70)
+hp = 500
+damaged_by = Array[StringName]([&"enemy"])
 
 [node name="SpriteController" parent="." index="0"]
 clip_contents = true
@@ -28,13 +35,28 @@ texture_filter = 1
 texture = ExtResource("2_lwt1w")
 centered = false
 
-[node name="CollisionShape2D" parent="." index="1"]
+[node name="DestroyedSprite" parent="." index="1"]
+position = Vector2(0, 33)
+texture = ExtResource("4_0it8w")
+
+[node name="HurtBox" parent="." index="2" instance=ExtResource("5_ibokq")]
+collision_mask = 16
+
+[node name="CollisionShape2D" parent="HurtBox" index="0"]
+position = Vector2(0, 28)
+shape = SubResource("RectangleShape2D_u568o")
+
+[node name="CollisionShape2D" parent="." index="3"]
 position = Vector2(0, 28)
 shape = SubResource("RectangleShape2D_srtgt")
 
-[node name="ProximityDetector" parent="." index="2"]
+[node name="ProximityDetector" parent="." index="4"]
 collision_layer = 0
 
 [node name="CollisionShape2D" parent="ProximityDetector" index="0"]
 position = Vector2(0, 34)
 shape = SubResource("CircleShape2D_0wc12")
+
+[connection signal="hurt" from="HurtBox" to="." method="_on_hurt_box_hurt"]
+
+[editable path="HurtBox"]
