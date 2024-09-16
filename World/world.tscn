@@ -98,6 +98,7 @@ disabled = false
 [node name="World" type="Node2D"]
 
 [node name="Background" type="Sprite2D" parent="."]
+z_index = -2
 texture_filter = 2
 texture_repeat = 2
 position = Vector2(4.76837e-07, 0)
