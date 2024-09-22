@@ -1,8 +1,8 @@
 [gd_scene load_steps=6 format=3 uid="uid://ddioafh0x7lsh"]
 
 [ext_resource type="Texture2D" uid="uid://brsjpjhfysry6" path="res://Textures/World/white_square.png" id="1_bdh2g"]
-[ext_resource type="PackedScene" uid="uid://c6lj84u0fegmg" path="res://Utility/hurt_box.tscn" id="2_kuigb"]
 [ext_resource type="Script" path="res://hurt_group.gd" id="2_orsnc"]
+[ext_resource type="PackedScene" uid="uid://dvxbpr0eavwtg" path="res://Utility/hurt_polygon.tscn" id="3_uh8pr"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_o0d37"]
 texture = ExtResource("1_bdh2g")
@@ -19,12 +19,13 @@ z_index = 1
 tile_set = SubResource("TileSet_37d5x")
 script = ExtResource("2_orsnc")
 
-[node name="HurtBox" parent="." instance=ExtResource("2_kuigb")]
-collision_mask = 16
-
 [node name="StaticBody2D" type="StaticBody2D" parent="."]
 z_as_relative = false
 
 [node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="StaticBody2D"]
 
-[editable path="HurtBox"]
+[node name="HurtPolygon" parent="." instance=ExtResource("3_uh8pr")]
+collision_layer = 16
+collision_mask = 16
+
+[connection signal="hurt" from="HurtPolygon" to="." method="_on_hurt_polygon_hurt"]

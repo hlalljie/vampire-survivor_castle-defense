@@ -1,16 +1,16 @@
 extends TileMapLayer
 
 @onready var parent_layer: TileMapLayer = get_parent()
-@onready var hurt_collision_shape: CollisionShape2D = $HurtBox/CollisionShape2D
+@onready var hurt_collision_polygon: CollisionPolygon2D = $HurtPolygon/CollisionPolygon2D
 @onready var static_collision_body: StaticBody2D = $StaticBody2D
-@onready var static_collision_shape: CollisionPolygon2D = $StaticBody2D/CollisionPolygon2D
+@onready var static_collision_polygon: CollisionPolygon2D = $StaticBody2D/CollisionPolygon2D
 
 @export var hp = 100
 
 func _ready():
 	create_combined_collision_polygon()
 	# turn off collisions on parent
-	#parent_layer.collision_enabled = false
+	parent_layer.collision_enabled = false
 	#visible = false
 
 func create_combined_collision_polygon() -> void:
@@ -25,15 +25,10 @@ func create_combined_collision_polygon() -> void:
 		# merge the transformed polygon with the new collision polygon
 		new_collision_polygon_points = Geometry2D.merge_polygons(new_collision_polygon_points, parent_poly)[0]
 
-	# create the polygon shape
-	var hurt_collision_polygon: ConvexPolygonShape2D = ConvexPolygonShape2D.new()
-	var static_collision_polygon: ConvexPolygonShape2D = ConvexPolygonShape2D.new()
-	hurt_collision_polygon.set_point_cloud(new_collision_polygon_points)
-	static_collision_polygon.set_point_cloud(new_collision_polygon_points)
-	#set collision polygons for hurtgroup to our new combined collision polygon
-	#hurt_collision_shape.set_shape(hurt_collision_polygon)
 	print(new_collision_polygon_points)
-	static_collision_shape.set_polygon(new_collision_polygon_points)
+	# set collision polygons for hurtgroup to our new combined collision polygon
+	hurt_collision_polygon.set_polygon(new_collision_polygon_points)
+	static_collision_polygon.set_polygon(new_collision_polygon_points)
 
 
 func get_cell_collision_polygon(cell: Vector2i) -> PackedVector2Array:
@@ -58,7 +53,7 @@ func get_cell_collision_polygon(cell: Vector2i) -> PackedVector2Array:
 	return translated_polygon
 
 
-func _on_hurt_box_hurt(damage: int, _angle: Vector2, _knockback: int) -> void:
+func _on_hurt_polygon_hurt(damage: int, _angle: Vector2, _knockback: int) -> void:
 	hp -= damage
 	print("Hurt Group hit for %d damage. HP left: %d" % [damage, hp])
 	if hp <= 0:
