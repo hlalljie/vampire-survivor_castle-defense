@@ -1,11 +1,14 @@
 extends CharacterBody2D
 
+# export variables
+@export var debug_no_weapon: bool = false
+
 # Global variables
 var movement_speed: float = 60.0
 var max_hp: int = 80
 var hp: int = 80
 var last_movement: Vector2 = Vector2.UP
-var time: int = 0 
+var time: int = 0
 
 # Experience
 var experience: int = 0
@@ -83,7 +86,8 @@ var additional_attacks = 0
 signal player_death
 
 func _ready() -> void:
-	select_first_weapon()
+	if not debug_no_weapon:
+		select_first_weapon()
 	# proc all attacks
 	attack()
 	set_exp_bar(experience, calculate_exp_cap())
@@ -142,10 +146,10 @@ func attack() -> void:
 ## Lowers hp based on damage recieved
 func _on_hurt_box_hurt(damage: int, _angle, _knockback) -> void:
 	# lowers hp based on damage recieved
-	hp -= clamp(damage-armor, 1.0, 99999.0)
-	print("hp:", hp)
+	hp -= clamp(damage - armor, 1.0, 99999.0)
+	#print("hp:", hp)
 	healthBar.max_value = max_hp
-	healthBar.value = hp	
+	healthBar.value = hp
 	if hp <= 0:
 		death()
 
@@ -173,7 +177,7 @@ func _on_ice_spear_attack_timer_timeout() -> void:
 		# fire off more ice spears if ammo exists
 		if ice_spear_ammo > 0:
 			iceSpearAttackTimer.start()
-		else: 
+		else:
 			iceSpearAttackTimer.stop()
 			
 ## Gain ammo every time the timer is up
@@ -200,7 +204,7 @@ func _on_tornado_attack_timer_timeout() -> void:
 		# fire off more ice spears if ammo exists
 		if tornado_ammo > 0:
 			tornadoAttackTimer.start()
-		else: 
+		else:
 			tornadoAttackTimer.stop()
 ## Spawns as many javelins as there is ammo
 func spawn_javelin():
@@ -364,19 +368,19 @@ func upgrade_character(upgrade):
 			javelin_level = 3
 		"javelin4":
 			javelin_level = 4
-		"armor1","armor2","armor3","armor4":
+		"armor1", "armor2", "armor3", "armor4":
 			armor += 1
-		"speed1","speed2","speed3","speed4":
+		"speed1", "speed2", "speed3", "speed4":
 			movement_speed += 20.0
-		"tome1","tome2","tome3","tome4":
+		"tome1", "tome2", "tome3", "tome4":
 			spell_size += 0.10
-		"scroll1","scroll2","scroll3","scroll4":
+		"scroll1", "scroll2", "scroll3", "scroll4":
 			spell_cooldown += 0.05
-		"ring1","ring2":
+		"ring1", "ring2":
 			additional_attacks += 1
 		"food":
 			hp += 20
-			hp = clamp(hp,0,max_hp)
+			hp = clamp(hp, 0, max_hp)
 	# add upgrade to gui for collected upgrades 
 	adjust_gui_collection(upgrade)
 	#call attack script to refresh everything
@@ -411,7 +415,7 @@ func get_random_item(only_types: Array = []) -> String:
 		if upgrade in upgrade_options:
 			continue
 		# don't pick food
-		if UpgradeDb.UPGRADES[upgrade]["type"] == "item": 
+		if UpgradeDb.UPGRADES[upgrade]["type"] == "item":
 			continue
 		# if only certain types are included, check if the upgrade is one of the included types
 		if not only_types.is_empty():
@@ -428,7 +432,7 @@ func get_random_item(only_types: Array = []) -> String:
 					prereq_filled = false
 					break
 			if prereq_filled:
-				db_list.append(upgrade) 
+				db_list.append(upgrade)
 	
 	# pick a random choice from the valid upgrade options
 	if not db_list.is_empty():
@@ -446,8 +450,8 @@ func change_time(new_time: int = 0):
 	var minutes: int = int(time / 60)
 	var seconds: int = time % 60
 	# convert to 00:00 format (double digit minutes and seconds)
-	var minute_str: String = "%02d" %minutes
-	var second_str: String = "%02d" %seconds
+	var minute_str: String = "%02d"%minutes
+	var second_str: String = "%02d"%seconds
 	# dipplay time in the UI
 	timerLabel.text = minute_str + ":" + second_str
 	

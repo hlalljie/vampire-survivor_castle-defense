@@ -1,6 +1,8 @@
-[gd_scene load_steps=4 format=4 uid="uid://dnr7p1eig3djm"]
+[gd_scene load_steps=6 format=4 uid="uid://dnr7p1eig3djm"]
 
 [ext_resource type="Texture2D" uid="uid://p7h1s50g2j2r" path="res://Textures/World/stone_wall_set.png" id="1_f4ht3"]
+[ext_resource type="PackedScene" uid="uid://ddioafh0x7lsh" path="res://World/Tilemaps/hurt_group.tscn" id="2_v1y5e"]
+[ext_resource type="Script" path="res://hurt_group.gd" id="3_yu61f"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_x5cfn"]
 texture = ExtResource("1_f4ht3")
@@ -459,8 +461,8 @@ texture_region_size = Vector2i(32, 32)
 
 [sub_resource type="TileSet" id="TileSet_o1s81"]
 tile_size = Vector2i(32, 32)
-physics_layer_0/collision_layer = 1
-physics_layer_0/collision_mask = 0
+physics_layer_0/collision_layer = 17
+physics_layer_0/collision_mask = 16
 terrain_set_0/mode = 0
 terrain_set_0/terrain_0/name = "StoneWall"
 terrain_set_0/terrain_0/color = Color(0.234375, 0.234375, 0.234375, 1)
@@ -471,3 +473,13 @@ sources/0 = SubResource("TileSetAtlasSource_x5cfn")
 [node name="TileMapLayer" type="TileMapLayer" parent="."]
 tile_map_data = PackedByteArray("AAD+/wEAAAADAAQAAAD//wEAAAAHAAcAAAAAAAEAAAAFAAcAAAD//wAAAAAFAAIAAAD+/wAAAAADAAIAAAADAAEAAAAIAAcAAAACAAEAAAADAAcAAAAEAAEAAAAFAAQAAAADAAAAAAADAAIAAAAEAAAAAAAFAAIAAAD6/wAAAAABAAUAAAD6/wEAAAAHAAsAAAD6/wIAAAADAAQAAAD7/wEAAAAFAAIAAAD7/wIAAAAFAAQAAAD6//7/AAABAAcAAAD6//3/AAAHAAoAAAD6//z/AAADAAIAAAD7//z/AAAFAAIAAAD7//3/AAAFAAQAAAD4//z/AAAFAAIAAAD4//3/AAAFAAMAAAD4//7/AAAFAAQAAAD3//z/AAADAAIAAAD3//3/AAADAAMAAAD4/wAAAAABAAUAAAD4/wEAAAAIAAsAAAD4/wIAAAAFAAQAAAD3/wEAAAADAAIAAAD3/wIAAAADAAQAAAD2//7/AAADAAcAAAD3//7/AAAIAAcAAAD+//z/AAADAAcAAAD///z/AAAEAAcAAAAAAPz/AAAEAAcAAAABAPz/AAAEAAcAAAACAPz/AAAEAAcAAAADAPz/AAAEAAcAAAAEAPz/AAAEAAcAAAAFAPz/AAAEAAcAAAAGAPz/AAAFAAcAAAD2/wcAAAADAAcAAAD3/wcAAAAEAAcAAAD4/wcAAAAEAAcAAAD6/wcAAAAEAAcAAAD5/wcAAAAEAAcAAAD8/wcAAAAEAAcAAAD7/wcAAAAEAAcAAAD+/wcAAAAEAAcAAAD9/wcAAAAEAAcAAAAAAAcAAAAEAAcAAAD//wcAAAAEAAcAAAACAAcAAAAEAAcAAAABAAcAAAAEAAcAAAADAAcAAAAEAAcAAAAEAAcAAAAIAAMAAAAEAAYAAAABAAUAAAA=")
 tile_set = SubResource("TileSet_o1s81")
+
+[node name="HurtGroup" parent="TileMapLayer" instance=ExtResource("2_v1y5e")]
+modulate = Color(1, 1, 1, 0.74902)
+tile_map_data = PackedByteArray("AAD+/wAAAQAAAAAAAAD//wAAAQAAAAAAAAD//wEAAQAAAAAAAAD+/wEAAQAAAAAAAAAAAAEAAQAAAAAAAAA=")
+script = ExtResource("3_yu61f")
+
+[connection signal="hurt" from="TileMapLayer/HurtGroup/HurtBox" to="TileMapLayer/HurtGroup" method="_on_hurt_box_hurt"]
+
+[editable path="TileMapLayer/HurtGroup"]
+[editable path="TileMapLayer/HurtGroup/HurtBox"]

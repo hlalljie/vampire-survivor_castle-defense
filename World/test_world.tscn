@@ -95,7 +95,7 @@ enemy_number = 1
 enemy_spawn_delay = 0
 disabled = false
 
-[node name="World" type="Node2D"]
+[node name="TestWorld" type="Node2D"]
 
 [node name="Background" type="Sprite2D" parent="."]
 z_index = -2
@@ -108,12 +108,13 @@ region_enabled = true
 region_rect = Rect2(-4000, -4000, 4000, 4000)
 
 [node name="Player" parent="." instance=ExtResource("2_hkt5x")]
+debug_no_weapon = true
 
 [node name="EnemySpawner" parent="." instance=ExtResource("3_hmcrb")]
 spawns = Array[ExtResource("4_osho5")]([SubResource("Resource_g8uvd"), SubResource("Resource_b6sh2"), SubResource("Resource_brtpn"), SubResource("Resource_f7h7t"), SubResource("Resource_pnj35"), SubResource("Resource_765ik"), SubResource("Resource_vj8n6"), SubResource("Resource_pbnm3"), SubResource("Resource_0l3pi")])
 
 [node name="TestTown" parent="." instance=ExtResource("10_wjpfs")]
-position = Vector2(75, -164)
+position = Vector2(-50, 22)
 
 [node name="Loot" type="Node2D" parent="." groups=["loot"]]
 

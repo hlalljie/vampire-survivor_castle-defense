@@ -1,0 +1,23 @@
+[gd_scene load_steps=5 format=3 uid="uid://ddioafh0x7lsh"]
+
+[ext_resource type="Texture2D" uid="uid://brsjpjhfysry6" path="res://Textures/World/white_square.png" id="1_bdh2g"]
+[ext_resource type="PackedScene" uid="uid://c6lj84u0fegmg" path="res://Utility/hurt_box.tscn" id="2_kuigb"]
+
+[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_o0d37"]
+texture = ExtResource("1_bdh2g")
+texture_region_size = Vector2i(32, 32)
+0:0/0 = 0
+
+[sub_resource type="TileSet" id="TileSet_37d5x"]
+tile_size = Vector2i(32, 32)
+sources/1 = SubResource("TileSetAtlasSource_o0d37")
+
+[node name="HurtGroup" type="TileMapLayer"]
+modulate = Color(1, 1, 1, 0.705882)
+z_index = 10
+tile_set = SubResource("TileSet_37d5x")
+
+[node name="HurtBox" parent="." instance=ExtResource("2_kuigb")]
+collision_mask = 16
+
+[editable path="HurtBox"]
