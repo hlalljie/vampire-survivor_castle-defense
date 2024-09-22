@@ -1,8 +1,7 @@
-[gd_scene load_steps=6 format=4 uid="uid://dnr7p1eig3djm"]
+[gd_scene load_steps=5 format=4 uid="uid://dnr7p1eig3djm"]
 
 [ext_resource type="Texture2D" uid="uid://p7h1s50g2j2r" path="res://Textures/World/stone_wall_set.png" id="1_f4ht3"]
 [ext_resource type="PackedScene" uid="uid://ddioafh0x7lsh" path="res://World/Tilemaps/hurt_group.tscn" id="2_v1y5e"]
-[ext_resource type="Script" path="res://hurt_group.gd" id="3_yu61f"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_x5cfn"]
 texture = ExtResource("1_f4ht3")
@@ -477,9 +476,10 @@ tile_set = SubResource("TileSet_o1s81")
 [node name="HurtGroup" parent="TileMapLayer" instance=ExtResource("2_v1y5e")]
 modulate = Color(1, 1, 1, 0.74902)
 tile_map_data = PackedByteArray("AAD+/wAAAQAAAAAAAAD//wAAAQAAAAAAAAD//wEAAQAAAAAAAAD+/wEAAQAAAAAAAAAAAAEAAQAAAAAAAAA=")
-script = ExtResource("3_yu61f")
 
-[connection signal="hurt" from="TileMapLayer/HurtGroup/HurtBox" to="TileMapLayer/HurtGroup" method="_on_hurt_box_hurt"]
+[node name="HurtGroup2" parent="TileMapLayer" instance=ExtResource("2_v1y5e")]
+self_modulate = Color(0.833984, 1, 0.834633, 1)
+tile_map_data = PackedByteArray("AAACAAEAAQAAAAAAAAADAAEAAQAAAAAAAAAEAAEAAQAAAAAAAAAEAAAAAQAAAAAAAAADAAAAAQAAAAAAAAA=")
 
-[editable path="TileMapLayer/HurtGroup"]
-[editable path="TileMapLayer/HurtGroup/HurtBox"]
+[editable path="TileMapLayer/HurtGroup2"]
+[editable path="TileMapLayer/HurtGroup2/HurtBox"]

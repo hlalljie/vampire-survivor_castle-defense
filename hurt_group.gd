@@ -10,7 +10,8 @@ extends TileMapLayer
 func _ready():
 	create_combined_collision_polygon()
 	# turn off collisions on parent
-	parent_layer.collision_enabled = false
+	#parent_layer.collision_enabled = false
+	#visible = false
 
 func create_combined_collision_polygon() -> void:
 	# create an empty polygon to merge with all parent polygons
@@ -24,7 +25,6 @@ func create_combined_collision_polygon() -> void:
 		# merge the transformed polygon with the new collision polygon
 		new_collision_polygon_points = Geometry2D.merge_polygons(new_collision_polygon_points, parent_poly)[0]
 
-	new_collision_polygon_points = PackedVector2Array([Vector2(0, 32), Vector2(32, 32), Vector2(32, 97), Vector2(-64, 97), Vector2(-64, 12), Vector2(0, 12)])
 	# create the polygon shape
 	var hurt_collision_polygon: ConvexPolygonShape2D = ConvexPolygonShape2D.new()
 	var static_collision_polygon: ConvexPolygonShape2D = ConvexPolygonShape2D.new()

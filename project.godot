@@ -73,7 +73,3 @@ click={
 2d_physics/layer_3="Enemy"
 2d_physics/layer_4="Loot"
 2d_physics/layer_5="Building"
-
-[physics]
-
-common/physics_jitter_fix=2.0
