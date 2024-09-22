@@ -2,46 +2,67 @@ extends TileMapLayer
 
 @onready var parent_layer: TileMapLayer = get_parent()
 @onready var hurt_collision_shape: CollisionShape2D = $HurtBox/CollisionShape2D
+@onready var static_collision_body: StaticBody2D = $StaticBody2D
+@onready var static_collision_shape: CollisionPolygon2D = $StaticBody2D/CollisionPolygon2D
+
+@export var hp = 100
 
 func _ready():
 	create_combined_collision_polygon()
+	# turn off collisions on parent
+	parent_layer.collision_enabled = false
 
 func create_combined_collision_polygon() -> void:
 	# create an empty polygon to merge with all parent polygons
-	var new_collision_polygon: PackedVector2Array = PackedVector2Array()
+	var new_collision_polygon_points: PackedVector2Array = PackedVector2Array()
 
 	for cell in get_used_cells():
 		
-		# get tile's data
-		var parent_tile_data: TileData = parent_layer.get_cell_tile_data(cell)
-		# get tile's collision polygon
-		var parent_local_poly: PackedVector2Array = parent_tile_data.get_collision_polygon_points(0, 0)
-		# get cell's global position
-		var cell_position: Vector2i = Vector2i(cell.x, cell.y)
-
 		# apply coordinates to parent tile data's collision polygon
-		var transformed_poly: PackedVector2Array = apply_coordinates_to_polygon(parent_local_poly, cell_position)
-		print(transformed_poly)
+		var parent_poly: PackedVector2Array = get_cell_collision_polygon(cell)
+
 		# merge the transformed polygon with the new collision polygon
-		new_collision_polygon = Geometry2D.merge_polygons(new_collision_polygon, transformed_poly)[0]
-		
-		# remove parent tile data's collision polygon
-		# parent_tile_data.remove_collision_polygon(0, 0)
+		new_collision_polygon_points = Geometry2D.merge_polygons(new_collision_polygon_points, parent_poly)[0]
 
-	#set hurt collision polygon to our new combined collision polygon
+	new_collision_polygon_points = PackedVector2Array([Vector2(0, 32), Vector2(32, 32), Vector2(32, 97), Vector2(-64, 97), Vector2(-64, 12), Vector2(0, 12)])
+	# create the polygon shape
 	var hurt_collision_polygon: ConvexPolygonShape2D = ConvexPolygonShape2D.new()
-	hurt_collision_polygon.set_points(new_collision_polygon)
-	hurt_collision_shape.set_shape(hurt_collision_polygon)
+	var static_collision_polygon: ConvexPolygonShape2D = ConvexPolygonShape2D.new()
+	hurt_collision_polygon.set_point_cloud(new_collision_polygon_points)
+	static_collision_polygon.set_point_cloud(new_collision_polygon_points)
+	#set collision polygons for hurtgroup to our new combined collision polygon
+	#hurt_collision_shape.set_shape(hurt_collision_polygon)
+	print(new_collision_polygon_points)
+	static_collision_shape.set_polygon(new_collision_polygon_points)
 
-func apply_coordinates_to_polygon(polygon: PackedVector2Array, cell_position: Vector2i) -> PackedVector2Array:
-	var coordinate_adjustment = Vector2i(cell_position.x * 32 + 16, cell_position.y * 32 + 16)
-	var transformed_polygon = PackedVector2Array()
+
+func get_cell_collision_polygon(cell: Vector2i) -> PackedVector2Array:
+	# get tile's data
+	var tile_data: TileData = parent_layer.get_cell_tile_data(cell)
+	var tile_size = parent_layer.tile_set.tile_size[0]
+	# get tile's collision polygon
+	var local_poly: PackedVector2Array = tile_data.get_collision_polygon_points(0, 0)
 	
-	for point in polygon:
-		transformed_polygon.append(point + Vector2(coordinate_adjustment))
+	# find adjusted coordinates, multiply by tile size and offset by half the tile size to account for centered position
+	# tilesize must be even
+	var coordinate_adjustment = Vector2i(cell.x * tile_size + (tile_size >> 1), cell.y * tile_size + (tile_size >> 1))
 	
-	return transformed_polygon
+	# apply the translation to every point in the polygon
+	var translated_polygon = PackedVector2Array()
+	for point in local_poly:
+		translated_polygon.append(Vector2(Vector2i(point) + coordinate_adjustment))
+	
+	# remove parent tile data's collision polygon
+	# tile_data.remove_collision_polygon(0, 0)
+	
+	return translated_polygon
 
 
-func _on_hurt_box_hurt(damage: int, angle: Vector2, knockback: int) -> void:
-	print("hit damage: %d, angle: %s, knockback: %d" % [damage, angle, knockback])
+func _on_hurt_box_hurt(damage: int, _angle: Vector2, _knockback: int) -> void:
+	hp -= damage
+	print("Hurt Group hit for %d damage. HP left: %d" % [damage, hp])
+	if hp <= 0:
+		destroy_group()
+
+func destroy_group() -> void:
+	print("Hurt Group destroyed")

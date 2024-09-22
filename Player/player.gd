@@ -94,8 +94,40 @@ func _ready() -> void:
 	# setup health bar
 	_on_hurt_box_hurt(0, 0, 0)
 
-func _physics_process(_delta: float) -> void:
+func _physics_process(delta: float) -> void:
 	movement()
+	#collide_movement(delta)
+func collide_movement(delta) -> void:
+	# Collect movement vector from input (either 0 or 1 for every direction)
+	var move: Vector2 = Input.get_vector("left", "right", "up", "down")
+	
+	# Face player sprite in correct direction
+	if move.x > 0:
+		sprite.flip_h = true
+	elif move.x < 0:
+		sprite.flip_h = false
+		
+	# Walk animation
+	# only animate when moving
+	if move != Vector2.ZERO:
+		# if walk animation timer is done, go to next animation
+		if walkTimer.is_stopped():
+			# go to next animation (looping)
+			sprite.frame = (sprite.frame + 1) % (sprite.hframes)
+			# restart walk timer
+			walkTimer.start()
+		
+		# update last movement, rounding brings diagonal unit vector to 1, 1 (instead of .7, .7)
+		last_movement = move.round()
+	
+	# set velocity as the unit vector of move multiplied by the movement speed
+	velocity = move.normalized() * movement_speed
+	# move and set to slide on collision
+	var collision = move_and_collide(velocity * delta)
+	if collision:
+		var normal = collision.get_normal()
+		velocity = velocity.slide(normal)
+		move_and_collide(velocity * delta)
 	
 func movement() -> void:
 	# Collect movement vector from input (either 0 or 1 for every direction)

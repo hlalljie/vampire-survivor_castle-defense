@@ -20,4 +20,9 @@ tile_set = SubResource("TileSet_37d5x")
 [node name="HurtBox" parent="." instance=ExtResource("2_kuigb")]
 collision_mask = 16
 
+[node name="StaticBody2D" type="StaticBody2D" parent="."]
+z_as_relative = false
+
+[node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="StaticBody2D"]
+
 [editable path="HurtBox"]
