@@ -3,7 +3,7 @@ extends Door
 class_name Gate
 
 @export var open_distance: Vector2 = Vector2(0.0, 70.0)
-@export var hp: int = 500
+@export var hp: int = 100
 @export var damaged_by: Array[StringName] = [&"enemy"]
 
 @onready var hurt_box = $HurtBox

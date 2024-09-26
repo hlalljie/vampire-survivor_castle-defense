@@ -20,7 +20,7 @@ height = 66.0
 position = Vector2(-3.32, -16)
 script = ExtResource("2_0jf3p")
 open_distance = Vector2(0, 70)
-hp = 500
+hp = 100
 damaged_by = Array[StringName]([&"enemy"])
 
 [node name="SpriteController" parent="." index="0"]

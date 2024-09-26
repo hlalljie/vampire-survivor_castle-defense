@@ -1,0 +1,15 @@
+[gd_resource type="TileSet" load_steps=5 format=3 uid="uid://bfdijkxuk8tsq"]
+
+[ext_resource type="PackedScene" uid="uid://c2x4vfd0j8y74" path="res://World/Towns/gate_left.tscn" id="1_ryct6"]
+[ext_resource type="PackedScene" uid="uid://b0spjvnu7cji4" path="res://World/Towns/gate_right.tscn" id="2_00o5g"]
+[ext_resource type="PackedScene" uid="uid://b8h2ufvptauic" path="res://World/Towns/gate_top.tscn" id="3_1f1f3"]
+
+[sub_resource type="TileSetScenesCollectionSource" id="TileSetScenesCollectionSource_xey5v"]
+resource_name = "Gates"
+scenes/1/scene = ExtResource("1_ryct6")
+scenes/2/scene = ExtResource("2_00o5g")
+scenes/3/scene = ExtResource("3_1f1f3")
+
+[resource]
+tile_size = Vector2i(32, 32)
+sources/0 = SubResource("TileSetScenesCollectionSource_xey5v")

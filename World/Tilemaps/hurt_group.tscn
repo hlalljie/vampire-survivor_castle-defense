@@ -19,7 +19,7 @@ z_index = 1
 position = Vector2(0, 1)
 tile_set = SubResource("TileSet_37d5x")
 script = ExtResource("2_orsnc")
-hp = 25
+hp = 200
 
 [node name="StaticBody2D" type="StaticBody2D" parent="."]
 z_as_relative = false
