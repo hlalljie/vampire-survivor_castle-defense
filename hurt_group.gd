@@ -6,17 +6,19 @@ extends TileMapLayer
 @onready var hurt_disable_timer: Timer = $HurtDisableTimer
 @onready var cell_coordinates: Array[Vector2i] = get_used_cells()
 
-
 @export var hp = 100
+@onready var visible_in_game = false
 
 func _ready():
 	create_combined_collision_polygon()
 	# turn off collisions on parent
 	parent_layer.collision_enabled = false
+	# hide in game
+	if not visible_in_game:
+		set_deferred("visible", false)
 
 
 func create_combined_collision_polygon() -> void:
-	var cell_polygons = []
 	for cell in cell_coordinates:
 		# get cell's collision polygon points
 		var new_polygon_points: PackedVector2Array = get_cell_collision_polygon(cell)
