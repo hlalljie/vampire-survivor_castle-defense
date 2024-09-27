@@ -60,8 +60,10 @@ func _on_hurt_area_area_entered(area: Area2D) -> void:
 			# activates the cooldown timer, 
 			# which will reactive the hurtbox once done
 			hurt_disable_timer.start()
-			# collect hurt infomormation from damaging party
-			take_damage(area.damage)
+			# collect hurt information from all damaging parties
+			for attack_area in hurt_area.get_overlapping_areas():
+				if area.is_in_group("attack") and not area.get("damage") == null:
+					take_damage(area.damage)
 
 # Stop disabling hurtbox on timeout
 func _on_hurt_disable_timer_timeout() -> void:
